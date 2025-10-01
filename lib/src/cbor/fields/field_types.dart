@@ -1,0 +1,315 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:cbor/cbor.dart';
+import 'package:convert/convert.dart' as hex_convert;
+import 'package:ieee754/ieee754.dart';
+import 'package:uuid/uuid.dart';
+
+enum FieldType {
+  bool,
+  int,
+  number,
+  string,
+  enumeration,
+  enumArray,
+  bytes,
+  uuid,
+  timestamp;
+
+  static FieldType fromString(String value) {
+    return switch (value) {
+      'bool' => FieldType.bool,
+      'int' => FieldType.int,
+      'number' => FieldType.number,
+      'string' => FieldType.string,
+      'enum' => FieldType.enumeration,
+      'enum_array' => FieldType.enumArray,
+      'bytes' => FieldType.bytes,
+      'uuid' => FieldType.uuid,
+      'timestamp' => FieldType.timestamp,
+      _ => throw ArgumentError('Unknown field type: $value'),
+    };
+  }
+
+  String toConfigString() {
+    return switch (this) {
+      FieldType.bool => 'bool',
+      FieldType.int => 'int',
+      FieldType.number => 'number',
+      FieldType.string => 'string',
+      FieldType.enumeration => 'enum',
+      FieldType.enumArray => 'enum_array',
+      FieldType.bytes => 'bytes',
+      FieldType.uuid => 'uuid',
+      FieldType.timestamp => 'timestamp',
+    };
+  }
+}
+
+abstract class Field {
+  final int key;
+  final String name;
+  final bool required;
+  final FieldType type;
+
+  Field({
+    required this.key,
+    required this.name,
+    required this.type,
+    this.required = false,
+  });
+
+  dynamic decode(CborValue data);
+
+  CborValue encode(dynamic data);
+}
+
+class BoolField extends Field {
+  BoolField({required super.key, required super.name, super.required})
+    : super(type: FieldType.bool);
+
+  @override
+  bool decode(CborValue data) => (data as CborBool).value;
+
+  @override
+  CborValue encode(dynamic data) => CborBool(data as bool);
+}
+
+class IntField extends Field {
+  IntField({required super.key, required super.name, super.required})
+    : super(type: FieldType.int);
+
+  @override
+  int decode(CborValue data) => (data as CborSmallInt).value;
+
+  @override
+  CborValue encode(dynamic data) => CborSmallInt((data as num).toInt());
+}
+
+class NumberField extends Field {
+  NumberField({required super.key, required super.name, super.required})
+    : super(type: FieldType.number);
+
+  @override
+  num decode(CborValue data) {
+    final num value;
+    if (data is CborSmallInt) {
+      value = data.value;
+    } else if (data is CborFloat) {
+      value = data.value;
+    } else {
+      throw ArgumentError(
+        'Expected CborSmallInt or CborFloat, got ${data.runtimeType}',
+      );
+    }
+
+    if (value == value.toInt()) {
+      return value.toInt();
+    }
+    return (value * 1000).round() / 1000;
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    final num value = (data as num).toDouble();
+
+    if (value == value.toInt()) {
+      return CborSmallInt(value.toInt());
+    }
+
+    final FloatParts floatParts = FloatParts.fromDouble(value.toDouble());
+
+    final double float16Value = FloatParts.fromFloat16Bytes(
+      floatParts.toFloat16Bytes(),
+    ).toDouble();
+    if ((value - float16Value).abs() < 1e-3) {
+      return CborFloat(float16Value);
+    }
+
+    final double float32Value = FloatParts.fromFloat32Bytes(
+      floatParts.toFloat32Bytes(),
+    ).toDouble();
+    if ((value - float32Value).abs() < 1e-3) {
+      return CborFloat(float32Value);
+    }
+
+    throw ArgumentError('Cannot reasonably encode decimal $value');
+  }
+}
+
+class StringField extends Field {
+  final int maxLength;
+
+  StringField({
+    required super.key,
+    required super.name,
+    required this.maxLength,
+    super.required,
+  }) : super(type: FieldType.string);
+
+  @override
+  String decode(CborValue data) => (data as CborString).toString();
+
+  @override
+  CborValue encode(dynamic data) {
+    final String value = data as String;
+    if (value.length > maxLength) {
+      throw ArgumentError(
+        'String "$value" exceeds maximum length of $maxLength',
+      );
+    }
+    return CborString(value);
+  }
+}
+
+class EnumField extends Field {
+  final Map<int, String> itemsByKey;
+  final Map<String, int> itemsByName;
+
+  EnumField({
+    required super.key,
+    required super.name,
+    required this.itemsByKey,
+    super.required,
+  }) : itemsByName = <String, int>{
+         for (MapEntry<int, String> e in itemsByKey.entries) e.value: e.key,
+       },
+       super(type: FieldType.enumeration);
+
+  @override
+  String decode(CborValue data) {
+    final int key = (data as CborSmallInt).value;
+    return itemsByKey[key] ??
+        (throw ArgumentError('Unknown enum key $key for field $name'));
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    final String value = data as String;
+    final int? enumKey = itemsByName[value];
+    if (enumKey == null) {
+      throw ArgumentError('Unknown enum value "$value" for field $name');
+    }
+    return CborSmallInt(enumKey);
+  }
+}
+
+class EnumArrayField extends Field {
+  final Map<int, String> itemsByKey;
+  final Map<String, int> itemsByName;
+
+  EnumArrayField({
+    required super.key,
+    required super.name,
+    required this.itemsByKey,
+    super.required,
+  }) : itemsByName = <String, int>{
+         for (MapEntry<int, String> e in itemsByKey.entries) e.value: e.key,
+       },
+       super(type: FieldType.enumArray);
+
+  @override
+  List<String> decode(CborValue data) {
+    final CborList list = data as CborList;
+    return list.map((CborValue item) {
+      final int key = (item as CborSmallInt).value;
+      return itemsByKey[key] ??
+          (throw ArgumentError('Unknown enum key $key for field $name'));
+    }).toList();
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    final List<int> values = (data as List<dynamic>).map((dynamic item) {
+      final String value = item as String;
+      final int? enumKey = itemsByName[value];
+      if (enumKey == null) {
+        throw ArgumentError('Unknown enum value "$value" for field $name');
+      }
+      return enumKey;
+    }).toList();
+
+    return CborList(values.map((int v) => CborSmallInt(v)).toList());
+  }
+}
+
+class BytesField extends Field {
+  final int? maxLength;
+
+  BytesField({
+    required super.key,
+    required super.name,
+    this.maxLength,
+    super.required,
+  }) : super(type: FieldType.bytes);
+
+  @override
+  dynamic decode(CborValue data) {
+    final List<int> bytes = (data as CborBytes).bytes;
+    return <String, String>{'hex': hex_convert.hex.encode(bytes)};
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    Uint8List bytes;
+
+    if (data is Uint8List) {
+      bytes = data;
+    } else if (data is List<int>) {
+      bytes = Uint8List.fromList(data);
+    } else if (data is Map && data.containsKey('hex')) {
+      bytes = _hexToBytes(data['hex'] as String);
+    } else if (data is String) {
+      bytes = Uint8List.fromList(utf8.encode(data));
+    } else if (data is int) {
+      bytes = _intToBytes(data);
+    } else {
+      throw ArgumentError('Cannot encode ${data.runtimeType} to bytes');
+    }
+
+    if (maxLength != null && bytes.length > maxLength!) {
+      throw ArgumentError(
+        'Bytes length ${bytes.length} exceeds maximum length of $maxLength',
+      );
+    }
+
+    return CborBytes(bytes);
+  }
+
+  Uint8List _hexToBytes(String hexString) {
+    final String cleaned = hexString.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
+    return Uint8List.fromList(hex_convert.hex.decode(cleaned));
+  }
+
+  Uint8List _intToBytes(int value) {
+    final List<int> bytes = <int>[];
+    int remaining = value;
+    while (remaining > 0) {
+      bytes.add(remaining & 0xFF);
+      remaining >>= 8;
+    }
+    return Uint8List.fromList(bytes);
+  }
+}
+
+class UuidField extends Field {
+  UuidField({required super.key, required super.name, super.required})
+    : super(type: FieldType.uuid);
+
+  @override
+  String decode(CborValue data) {
+    final List<int> bytes = (data as CborBytes).bytes;
+    final Uint8List byteList = bytes is Uint8List
+        ? bytes
+        : Uint8List.fromList(bytes);
+    return UuidValue.fromByteList(byteList).toString();
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    final Uint8List bytes = Uint8List.fromList(
+      UuidValue.fromString(data as String).toBytes(),
+    );
+    return CborBytes(bytes);
+  }
+}

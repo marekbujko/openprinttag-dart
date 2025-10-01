@@ -1,0 +1,10 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// Source: data/config_nfcv.yaml
+
+const Map<String, Object?> configNfcv = const {
+  'mime_type': 'application/vnd.prusa3d.mat.nfc',
+  'root': 'nfcv',
+  'meta_fields': 'meta_fields.yaml',
+  'main_fields': 'main_fields.yaml',
+  'aux_fields': 'aux_fields.yaml',
+};

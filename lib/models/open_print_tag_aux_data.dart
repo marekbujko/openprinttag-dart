@@ -1,0 +1,29 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'open_print_tag_aux_data.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class OpenPrintTagAuxData {
+  @JsonKey(name: 'consumed_weight')
+  final num? consumedWeight;
+
+  final String? workgroup;
+
+  @JsonKey(name: 'general_purpose_range_user')
+  final String? generalPurposeRangeUser;
+
+  @JsonKey(name: 'last_stir_time')
+  final int? lastStirTime;
+
+  const OpenPrintTagAuxData({
+    this.consumedWeight,
+    this.workgroup,
+    this.generalPurposeRangeUser,
+    this.lastStirTime,
+  });
+
+  factory OpenPrintTagAuxData.fromJson(Map<String, dynamic> json) =>
+      _$OpenPrintTagAuxDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OpenPrintTagAuxDataToJson(this);
+}

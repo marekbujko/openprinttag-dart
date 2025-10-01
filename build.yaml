@@ -1,0 +1,19 @@
+targets:
+  $default:
+    sources:
+      - $package$
+      - lib/**
+      - data/**
+    builders:
+      open_print_tag|yaml_data_builder:
+        enabled: true
+
+builders:
+  yaml_data_builder:
+    import: "tool/builders/yaml_data_builder.dart"
+    builder_factories: ["yamlDataBuilder"]
+    build_extensions:
+      ^data/{{}}.yaml: ["lib/src/data/{{}}.data.g.dart"]
+      ^data/{{}}.yml:  ["lib/src/data/{{}}.data.g.dart"]
+    auto_apply: none
+    build_to: source
