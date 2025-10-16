@@ -1,6 +1,8 @@
-# OpenPrintTag
+# OpenPrintTag (Dart)
 
 Encode and decode OpenPrintTag data to/from CBOR format.
+
+This is the Dart/Flutter implementation based on the [Python OpenPrintTag library](https://github.com/prusa3d/OpenPrintTag).
 
 ## Features
 
@@ -82,3 +84,10 @@ It's available as `OpenPrintTagConstants.mimeType`.
 - Your choice of NDEF library
 
 Think of it this way: you handle getting data on/off the NFC tag, we handle the OpenPrintTag format.
+
+## Related Projects
+
+- [OpenPrintTag (Python)](https://github.com/prusa3d/OpenPrintTag) - Original Python implementation
+- [OpenPrintTag Specification](https://specs.prusa3d.tech/) - Format documentation
+
+This Dart library provides the same functionality for Flutter and Dart applications.
