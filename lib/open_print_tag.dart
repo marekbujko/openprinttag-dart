@@ -13,3 +13,5 @@ export 'src/cbor/fields/fields_manager.dart';
 export 'src/cbor/fields/ndef_region.dart';
 // Export main parser (high-level API)
 export 'src/open_print_tag_parser.dart';
+// Export UUID generator utility
+export 'src/uuid_generator.dart';

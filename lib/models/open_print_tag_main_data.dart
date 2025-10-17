@@ -1,8 +1,11 @@
 import 'dart:typed_data';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:open_print_tag/src/uuid_generator.dart';
 
 part 'open_print_tag_main_data.g.dart';
 
+@CopyWith()
 @JsonSerializable(explicitToJson: true)
 class OpenPrintTagMainData {
   // UUIDs
@@ -247,10 +250,81 @@ class OpenPrintTagMainData {
     this.cureWavelength,
   });
 
-  factory OpenPrintTagMainData.fromJson(Map<String, dynamic> json) =>
-      _$OpenPrintTagMainDataFromJson(json);
+  factory OpenPrintTagMainData.fromJson(Map<String, dynamic> json) {
+    final OpenPrintTagMainData data = _$OpenPrintTagMainDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$OpenPrintTagMainDataToJson(this);
+    String? brandUuid = data.brandUuid;
+    String? materialUuid = data.materialUuid;
+    String? packageUuid = data.packageUuid;
+
+    if (brandUuid == null && data.brandName != null) {
+      brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(data.brandName!);
+    }
+
+    if (materialUuid == null &&
+        brandUuid != null &&
+        data.materialName != null) {
+      materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
+        brandUuid,
+        data.materialName!,
+      );
+    }
+
+    if (packageUuid == null && brandUuid != null && data.gtin != null) {
+      packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
+        brandUuid,
+        data.gtin!,
+      );
+    }
+
+    if (brandUuid != data.brandUuid ||
+        materialUuid != data.materialUuid ||
+        packageUuid != data.packageUuid) {
+      return data.copyWith(
+        brandUuid: brandUuid,
+        materialUuid: materialUuid,
+        packageUuid: packageUuid,
+      );
+    }
+
+    return data;
+  }
+
+  Map<String, dynamic> toJson() {
+    String? brandUuid = this.brandUuid;
+    String? materialUuid = this.materialUuid;
+    String? packageUuid = this.packageUuid;
+
+    if (brandUuid == null && brandName != null) {
+      brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(brandName!);
+    }
+
+    if (materialUuid == null && brandUuid != null && materialName != null) {
+      materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
+        brandUuid,
+        materialName!,
+      );
+    }
+
+    if (packageUuid == null && brandUuid != null && gtin != null) {
+      packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
+        brandUuid,
+        gtin!,
+      );
+    }
+
+    if (brandUuid != this.brandUuid ||
+        materialUuid != this.materialUuid ||
+        packageUuid != this.packageUuid) {
+      return copyWith(
+        brandUuid: brandUuid,
+        materialUuid: materialUuid,
+        packageUuid: packageUuid,
+      ).toJson();
+    }
+
+    return _$OpenPrintTagMainDataToJson(this);
+  }
 
   /// Converts JSON value to Uint8List
   static Uint8List? _uint8ListFromJson(dynamic value) {

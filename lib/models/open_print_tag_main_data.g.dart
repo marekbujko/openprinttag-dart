@@ -3,6 +3,690 @@
 part of 'open_print_tag_main_data.dart';
 
 // **************************************************************************
+// CopyWithGenerator
+// **************************************************************************
+
+abstract class _$OpenPrintTagMainDataCWProxy {
+  OpenPrintTagMainData instanceUuid(String? instanceUuid);
+
+  OpenPrintTagMainData packageUuid(String? packageUuid);
+
+  OpenPrintTagMainData materialUuid(String? materialUuid);
+
+  OpenPrintTagMainData brandUuid(String? brandUuid);
+
+  OpenPrintTagMainData gtin(num? gtin);
+
+  OpenPrintTagMainData brandSpecificInstanceId(String? brandSpecificInstanceId);
+
+  OpenPrintTagMainData brandSpecificPackageId(String? brandSpecificPackageId);
+
+  OpenPrintTagMainData brandSpecificMaterialId(String? brandSpecificMaterialId);
+
+  OpenPrintTagMainData materialClass(String? materialClass);
+
+  OpenPrintTagMainData materialType(String? materialType);
+
+  OpenPrintTagMainData materialName(String? materialName);
+
+  OpenPrintTagMainData materialAbbreviation(String? materialAbbreviation);
+
+  OpenPrintTagMainData brandName(String? brandName);
+
+  OpenPrintTagMainData writeProtection(String? writeProtection);
+
+  OpenPrintTagMainData manufacturedDate(int? manufacturedDate);
+
+  OpenPrintTagMainData expirationDate(int? expirationDate);
+
+  OpenPrintTagMainData nominalNettoFullWeight(num? nominalNettoFullWeight);
+
+  OpenPrintTagMainData actualNettoFullWeight(num? actualNettoFullWeight);
+
+  OpenPrintTagMainData nominalFullLength(num? nominalFullLength);
+
+  OpenPrintTagMainData actualFullLength(num? actualFullLength);
+
+  OpenPrintTagMainData emptyContainerWeight(num? emptyContainerWeight);
+
+  OpenPrintTagMainData primaryColor(Uint8List? primaryColor);
+
+  OpenPrintTagMainData secondaryColor0(Uint8List? secondaryColor0);
+
+  OpenPrintTagMainData secondaryColor1(Uint8List? secondaryColor1);
+
+  OpenPrintTagMainData secondaryColor2(Uint8List? secondaryColor2);
+
+  OpenPrintTagMainData secondaryColor3(Uint8List? secondaryColor3);
+
+  OpenPrintTagMainData secondaryColor4(Uint8List? secondaryColor4);
+
+  OpenPrintTagMainData transmissionDistance(num? transmissionDistance);
+
+  OpenPrintTagMainData tags(List<String>? tags);
+
+  OpenPrintTagMainData density(num? density);
+
+  OpenPrintTagMainData filamentDiameter(num? filamentDiameter);
+
+  OpenPrintTagMainData shoreHardnessA(int? shoreHardnessA);
+
+  OpenPrintTagMainData shoreHardnessD(int? shoreHardnessD);
+
+  OpenPrintTagMainData minNozzleDiameter(num? minNozzleDiameter);
+
+  OpenPrintTagMainData minPrintTemperature(int? minPrintTemperature);
+
+  OpenPrintTagMainData maxPrintTemperature(int? maxPrintTemperature);
+
+  OpenPrintTagMainData preheatTemperature(int? preheatTemperature);
+
+  OpenPrintTagMainData minBedTemperature(int? minBedTemperature);
+
+  OpenPrintTagMainData maxBedTemperature(int? maxBedTemperature);
+
+  OpenPrintTagMainData minChamberTemperature(int? minChamberTemperature);
+
+  OpenPrintTagMainData maxChamberTemperature(int? maxChamberTemperature);
+
+  OpenPrintTagMainData chamberTemperature(int? chamberTemperature);
+
+  OpenPrintTagMainData containerWidth(int? containerWidth);
+
+  OpenPrintTagMainData containerOuterDiameter(int? containerOuterDiameter);
+
+  OpenPrintTagMainData containerInnerDiameter(int? containerInnerDiameter);
+
+  OpenPrintTagMainData containerHoleDiameter(int? containerHoleDiameter);
+
+  OpenPrintTagMainData viscosity18c(num? viscosity18c);
+
+  OpenPrintTagMainData viscosity25c(num? viscosity25c);
+
+  OpenPrintTagMainData viscosity40c(num? viscosity40c);
+
+  OpenPrintTagMainData viscosity60c(num? viscosity60c);
+
+  OpenPrintTagMainData containerVolumetricCapacity(
+    num? containerVolumetricCapacity,
+  );
+
+  OpenPrintTagMainData cureWavelength(int? cureWavelength);
+
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagMainData(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// OpenPrintTagMainData(...).copyWith(id: 12, name: "My name")
+  /// ```
+  OpenPrintTagMainData call({
+    String? instanceUuid,
+    String? packageUuid,
+    String? materialUuid,
+    String? brandUuid,
+    num? gtin,
+    String? brandSpecificInstanceId,
+    String? brandSpecificPackageId,
+    String? brandSpecificMaterialId,
+    String? materialClass,
+    String? materialType,
+    String? materialName,
+    String? materialAbbreviation,
+    String? brandName,
+    String? writeProtection,
+    int? manufacturedDate,
+    int? expirationDate,
+    num? nominalNettoFullWeight,
+    num? actualNettoFullWeight,
+    num? nominalFullLength,
+    num? actualFullLength,
+    num? emptyContainerWeight,
+    Uint8List? primaryColor,
+    Uint8List? secondaryColor0,
+    Uint8List? secondaryColor1,
+    Uint8List? secondaryColor2,
+    Uint8List? secondaryColor3,
+    Uint8List? secondaryColor4,
+    num? transmissionDistance,
+    List<String>? tags,
+    num? density,
+    num? filamentDiameter,
+    int? shoreHardnessA,
+    int? shoreHardnessD,
+    num? minNozzleDiameter,
+    int? minPrintTemperature,
+    int? maxPrintTemperature,
+    int? preheatTemperature,
+    int? minBedTemperature,
+    int? maxBedTemperature,
+    int? minChamberTemperature,
+    int? maxChamberTemperature,
+    int? chamberTemperature,
+    int? containerWidth,
+    int? containerOuterDiameter,
+    int? containerInnerDiameter,
+    int? containerHoleDiameter,
+    num? viscosity18c,
+    num? viscosity25c,
+    num? viscosity40c,
+    num? viscosity60c,
+    num? containerVolumetricCapacity,
+    int? cureWavelength,
+  });
+}
+
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfOpenPrintTagMainData.copyWith(...)` or call `instanceOfOpenPrintTagMainData.copyWith.fieldName(value)` for a single field.
+class _$OpenPrintTagMainDataCWProxyImpl
+    implements _$OpenPrintTagMainDataCWProxy {
+  const _$OpenPrintTagMainDataCWProxyImpl(this._value);
+
+  final OpenPrintTagMainData _value;
+
+  @override
+  OpenPrintTagMainData instanceUuid(String? instanceUuid) =>
+      call(instanceUuid: instanceUuid);
+
+  @override
+  OpenPrintTagMainData packageUuid(String? packageUuid) =>
+      call(packageUuid: packageUuid);
+
+  @override
+  OpenPrintTagMainData materialUuid(String? materialUuid) =>
+      call(materialUuid: materialUuid);
+
+  @override
+  OpenPrintTagMainData brandUuid(String? brandUuid) =>
+      call(brandUuid: brandUuid);
+
+  @override
+  OpenPrintTagMainData gtin(num? gtin) => call(gtin: gtin);
+
+  @override
+  OpenPrintTagMainData brandSpecificInstanceId(
+    String? brandSpecificInstanceId,
+  ) => call(brandSpecificInstanceId: brandSpecificInstanceId);
+
+  @override
+  OpenPrintTagMainData brandSpecificPackageId(String? brandSpecificPackageId) =>
+      call(brandSpecificPackageId: brandSpecificPackageId);
+
+  @override
+  OpenPrintTagMainData brandSpecificMaterialId(
+    String? brandSpecificMaterialId,
+  ) => call(brandSpecificMaterialId: brandSpecificMaterialId);
+
+  @override
+  OpenPrintTagMainData materialClass(String? materialClass) =>
+      call(materialClass: materialClass);
+
+  @override
+  OpenPrintTagMainData materialType(String? materialType) =>
+      call(materialType: materialType);
+
+  @override
+  OpenPrintTagMainData materialName(String? materialName) =>
+      call(materialName: materialName);
+
+  @override
+  OpenPrintTagMainData materialAbbreviation(String? materialAbbreviation) =>
+      call(materialAbbreviation: materialAbbreviation);
+
+  @override
+  OpenPrintTagMainData brandName(String? brandName) =>
+      call(brandName: brandName);
+
+  @override
+  OpenPrintTagMainData writeProtection(String? writeProtection) =>
+      call(writeProtection: writeProtection);
+
+  @override
+  OpenPrintTagMainData manufacturedDate(int? manufacturedDate) =>
+      call(manufacturedDate: manufacturedDate);
+
+  @override
+  OpenPrintTagMainData expirationDate(int? expirationDate) =>
+      call(expirationDate: expirationDate);
+
+  @override
+  OpenPrintTagMainData nominalNettoFullWeight(num? nominalNettoFullWeight) =>
+      call(nominalNettoFullWeight: nominalNettoFullWeight);
+
+  @override
+  OpenPrintTagMainData actualNettoFullWeight(num? actualNettoFullWeight) =>
+      call(actualNettoFullWeight: actualNettoFullWeight);
+
+  @override
+  OpenPrintTagMainData nominalFullLength(num? nominalFullLength) =>
+      call(nominalFullLength: nominalFullLength);
+
+  @override
+  OpenPrintTagMainData actualFullLength(num? actualFullLength) =>
+      call(actualFullLength: actualFullLength);
+
+  @override
+  OpenPrintTagMainData emptyContainerWeight(num? emptyContainerWeight) =>
+      call(emptyContainerWeight: emptyContainerWeight);
+
+  @override
+  OpenPrintTagMainData primaryColor(Uint8List? primaryColor) =>
+      call(primaryColor: primaryColor);
+
+  @override
+  OpenPrintTagMainData secondaryColor0(Uint8List? secondaryColor0) =>
+      call(secondaryColor0: secondaryColor0);
+
+  @override
+  OpenPrintTagMainData secondaryColor1(Uint8List? secondaryColor1) =>
+      call(secondaryColor1: secondaryColor1);
+
+  @override
+  OpenPrintTagMainData secondaryColor2(Uint8List? secondaryColor2) =>
+      call(secondaryColor2: secondaryColor2);
+
+  @override
+  OpenPrintTagMainData secondaryColor3(Uint8List? secondaryColor3) =>
+      call(secondaryColor3: secondaryColor3);
+
+  @override
+  OpenPrintTagMainData secondaryColor4(Uint8List? secondaryColor4) =>
+      call(secondaryColor4: secondaryColor4);
+
+  @override
+  OpenPrintTagMainData transmissionDistance(num? transmissionDistance) =>
+      call(transmissionDistance: transmissionDistance);
+
+  @override
+  OpenPrintTagMainData tags(List<String>? tags) => call(tags: tags);
+
+  @override
+  OpenPrintTagMainData density(num? density) => call(density: density);
+
+  @override
+  OpenPrintTagMainData filamentDiameter(num? filamentDiameter) =>
+      call(filamentDiameter: filamentDiameter);
+
+  @override
+  OpenPrintTagMainData shoreHardnessA(int? shoreHardnessA) =>
+      call(shoreHardnessA: shoreHardnessA);
+
+  @override
+  OpenPrintTagMainData shoreHardnessD(int? shoreHardnessD) =>
+      call(shoreHardnessD: shoreHardnessD);
+
+  @override
+  OpenPrintTagMainData minNozzleDiameter(num? minNozzleDiameter) =>
+      call(minNozzleDiameter: minNozzleDiameter);
+
+  @override
+  OpenPrintTagMainData minPrintTemperature(int? minPrintTemperature) =>
+      call(minPrintTemperature: minPrintTemperature);
+
+  @override
+  OpenPrintTagMainData maxPrintTemperature(int? maxPrintTemperature) =>
+      call(maxPrintTemperature: maxPrintTemperature);
+
+  @override
+  OpenPrintTagMainData preheatTemperature(int? preheatTemperature) =>
+      call(preheatTemperature: preheatTemperature);
+
+  @override
+  OpenPrintTagMainData minBedTemperature(int? minBedTemperature) =>
+      call(minBedTemperature: minBedTemperature);
+
+  @override
+  OpenPrintTagMainData maxBedTemperature(int? maxBedTemperature) =>
+      call(maxBedTemperature: maxBedTemperature);
+
+  @override
+  OpenPrintTagMainData minChamberTemperature(int? minChamberTemperature) =>
+      call(minChamberTemperature: minChamberTemperature);
+
+  @override
+  OpenPrintTagMainData maxChamberTemperature(int? maxChamberTemperature) =>
+      call(maxChamberTemperature: maxChamberTemperature);
+
+  @override
+  OpenPrintTagMainData chamberTemperature(int? chamberTemperature) =>
+      call(chamberTemperature: chamberTemperature);
+
+  @override
+  OpenPrintTagMainData containerWidth(int? containerWidth) =>
+      call(containerWidth: containerWidth);
+
+  @override
+  OpenPrintTagMainData containerOuterDiameter(int? containerOuterDiameter) =>
+      call(containerOuterDiameter: containerOuterDiameter);
+
+  @override
+  OpenPrintTagMainData containerInnerDiameter(int? containerInnerDiameter) =>
+      call(containerInnerDiameter: containerInnerDiameter);
+
+  @override
+  OpenPrintTagMainData containerHoleDiameter(int? containerHoleDiameter) =>
+      call(containerHoleDiameter: containerHoleDiameter);
+
+  @override
+  OpenPrintTagMainData viscosity18c(num? viscosity18c) =>
+      call(viscosity18c: viscosity18c);
+
+  @override
+  OpenPrintTagMainData viscosity25c(num? viscosity25c) =>
+      call(viscosity25c: viscosity25c);
+
+  @override
+  OpenPrintTagMainData viscosity40c(num? viscosity40c) =>
+      call(viscosity40c: viscosity40c);
+
+  @override
+  OpenPrintTagMainData viscosity60c(num? viscosity60c) =>
+      call(viscosity60c: viscosity60c);
+
+  @override
+  OpenPrintTagMainData containerVolumetricCapacity(
+    num? containerVolumetricCapacity,
+  ) => call(containerVolumetricCapacity: containerVolumetricCapacity);
+
+  @override
+  OpenPrintTagMainData cureWavelength(int? cureWavelength) =>
+      call(cureWavelength: cureWavelength);
+
+  @override
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagMainData(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// OpenPrintTagMainData(...).copyWith(id: 12, name: "My name")
+  /// ```
+  OpenPrintTagMainData call({
+    Object? instanceUuid = const $CopyWithPlaceholder(),
+    Object? packageUuid = const $CopyWithPlaceholder(),
+    Object? materialUuid = const $CopyWithPlaceholder(),
+    Object? brandUuid = const $CopyWithPlaceholder(),
+    Object? gtin = const $CopyWithPlaceholder(),
+    Object? brandSpecificInstanceId = const $CopyWithPlaceholder(),
+    Object? brandSpecificPackageId = const $CopyWithPlaceholder(),
+    Object? brandSpecificMaterialId = const $CopyWithPlaceholder(),
+    Object? materialClass = const $CopyWithPlaceholder(),
+    Object? materialType = const $CopyWithPlaceholder(),
+    Object? materialName = const $CopyWithPlaceholder(),
+    Object? materialAbbreviation = const $CopyWithPlaceholder(),
+    Object? brandName = const $CopyWithPlaceholder(),
+    Object? writeProtection = const $CopyWithPlaceholder(),
+    Object? manufacturedDate = const $CopyWithPlaceholder(),
+    Object? expirationDate = const $CopyWithPlaceholder(),
+    Object? nominalNettoFullWeight = const $CopyWithPlaceholder(),
+    Object? actualNettoFullWeight = const $CopyWithPlaceholder(),
+    Object? nominalFullLength = const $CopyWithPlaceholder(),
+    Object? actualFullLength = const $CopyWithPlaceholder(),
+    Object? emptyContainerWeight = const $CopyWithPlaceholder(),
+    Object? primaryColor = const $CopyWithPlaceholder(),
+    Object? secondaryColor0 = const $CopyWithPlaceholder(),
+    Object? secondaryColor1 = const $CopyWithPlaceholder(),
+    Object? secondaryColor2 = const $CopyWithPlaceholder(),
+    Object? secondaryColor3 = const $CopyWithPlaceholder(),
+    Object? secondaryColor4 = const $CopyWithPlaceholder(),
+    Object? transmissionDistance = const $CopyWithPlaceholder(),
+    Object? tags = const $CopyWithPlaceholder(),
+    Object? density = const $CopyWithPlaceholder(),
+    Object? filamentDiameter = const $CopyWithPlaceholder(),
+    Object? shoreHardnessA = const $CopyWithPlaceholder(),
+    Object? shoreHardnessD = const $CopyWithPlaceholder(),
+    Object? minNozzleDiameter = const $CopyWithPlaceholder(),
+    Object? minPrintTemperature = const $CopyWithPlaceholder(),
+    Object? maxPrintTemperature = const $CopyWithPlaceholder(),
+    Object? preheatTemperature = const $CopyWithPlaceholder(),
+    Object? minBedTemperature = const $CopyWithPlaceholder(),
+    Object? maxBedTemperature = const $CopyWithPlaceholder(),
+    Object? minChamberTemperature = const $CopyWithPlaceholder(),
+    Object? maxChamberTemperature = const $CopyWithPlaceholder(),
+    Object? chamberTemperature = const $CopyWithPlaceholder(),
+    Object? containerWidth = const $CopyWithPlaceholder(),
+    Object? containerOuterDiameter = const $CopyWithPlaceholder(),
+    Object? containerInnerDiameter = const $CopyWithPlaceholder(),
+    Object? containerHoleDiameter = const $CopyWithPlaceholder(),
+    Object? viscosity18c = const $CopyWithPlaceholder(),
+    Object? viscosity25c = const $CopyWithPlaceholder(),
+    Object? viscosity40c = const $CopyWithPlaceholder(),
+    Object? viscosity60c = const $CopyWithPlaceholder(),
+    Object? containerVolumetricCapacity = const $CopyWithPlaceholder(),
+    Object? cureWavelength = const $CopyWithPlaceholder(),
+  }) {
+    return OpenPrintTagMainData(
+      instanceUuid: instanceUuid == const $CopyWithPlaceholder()
+          ? _value.instanceUuid
+          // ignore: cast_nullable_to_non_nullable
+          : instanceUuid as String?,
+      packageUuid: packageUuid == const $CopyWithPlaceholder()
+          ? _value.packageUuid
+          // ignore: cast_nullable_to_non_nullable
+          : packageUuid as String?,
+      materialUuid: materialUuid == const $CopyWithPlaceholder()
+          ? _value.materialUuid
+          // ignore: cast_nullable_to_non_nullable
+          : materialUuid as String?,
+      brandUuid: brandUuid == const $CopyWithPlaceholder()
+          ? _value.brandUuid
+          // ignore: cast_nullable_to_non_nullable
+          : brandUuid as String?,
+      gtin: gtin == const $CopyWithPlaceholder()
+          ? _value.gtin
+          // ignore: cast_nullable_to_non_nullable
+          : gtin as num?,
+      brandSpecificInstanceId:
+          brandSpecificInstanceId == const $CopyWithPlaceholder()
+          ? _value.brandSpecificInstanceId
+          // ignore: cast_nullable_to_non_nullable
+          : brandSpecificInstanceId as String?,
+      brandSpecificPackageId:
+          brandSpecificPackageId == const $CopyWithPlaceholder()
+          ? _value.brandSpecificPackageId
+          // ignore: cast_nullable_to_non_nullable
+          : brandSpecificPackageId as String?,
+      brandSpecificMaterialId:
+          brandSpecificMaterialId == const $CopyWithPlaceholder()
+          ? _value.brandSpecificMaterialId
+          // ignore: cast_nullable_to_non_nullable
+          : brandSpecificMaterialId as String?,
+      materialClass: materialClass == const $CopyWithPlaceholder()
+          ? _value.materialClass
+          // ignore: cast_nullable_to_non_nullable
+          : materialClass as String?,
+      materialType: materialType == const $CopyWithPlaceholder()
+          ? _value.materialType
+          // ignore: cast_nullable_to_non_nullable
+          : materialType as String?,
+      materialName: materialName == const $CopyWithPlaceholder()
+          ? _value.materialName
+          // ignore: cast_nullable_to_non_nullable
+          : materialName as String?,
+      materialAbbreviation: materialAbbreviation == const $CopyWithPlaceholder()
+          ? _value.materialAbbreviation
+          // ignore: cast_nullable_to_non_nullable
+          : materialAbbreviation as String?,
+      brandName: brandName == const $CopyWithPlaceholder()
+          ? _value.brandName
+          // ignore: cast_nullable_to_non_nullable
+          : brandName as String?,
+      writeProtection: writeProtection == const $CopyWithPlaceholder()
+          ? _value.writeProtection
+          // ignore: cast_nullable_to_non_nullable
+          : writeProtection as String?,
+      manufacturedDate: manufacturedDate == const $CopyWithPlaceholder()
+          ? _value.manufacturedDate
+          // ignore: cast_nullable_to_non_nullable
+          : manufacturedDate as int?,
+      expirationDate: expirationDate == const $CopyWithPlaceholder()
+          ? _value.expirationDate
+          // ignore: cast_nullable_to_non_nullable
+          : expirationDate as int?,
+      nominalNettoFullWeight:
+          nominalNettoFullWeight == const $CopyWithPlaceholder()
+          ? _value.nominalNettoFullWeight
+          // ignore: cast_nullable_to_non_nullable
+          : nominalNettoFullWeight as num?,
+      actualNettoFullWeight:
+          actualNettoFullWeight == const $CopyWithPlaceholder()
+          ? _value.actualNettoFullWeight
+          // ignore: cast_nullable_to_non_nullable
+          : actualNettoFullWeight as num?,
+      nominalFullLength: nominalFullLength == const $CopyWithPlaceholder()
+          ? _value.nominalFullLength
+          // ignore: cast_nullable_to_non_nullable
+          : nominalFullLength as num?,
+      actualFullLength: actualFullLength == const $CopyWithPlaceholder()
+          ? _value.actualFullLength
+          // ignore: cast_nullable_to_non_nullable
+          : actualFullLength as num?,
+      emptyContainerWeight: emptyContainerWeight == const $CopyWithPlaceholder()
+          ? _value.emptyContainerWeight
+          // ignore: cast_nullable_to_non_nullable
+          : emptyContainerWeight as num?,
+      primaryColor: primaryColor == const $CopyWithPlaceholder()
+          ? _value.primaryColor
+          // ignore: cast_nullable_to_non_nullable
+          : primaryColor as Uint8List?,
+      secondaryColor0: secondaryColor0 == const $CopyWithPlaceholder()
+          ? _value.secondaryColor0
+          // ignore: cast_nullable_to_non_nullable
+          : secondaryColor0 as Uint8List?,
+      secondaryColor1: secondaryColor1 == const $CopyWithPlaceholder()
+          ? _value.secondaryColor1
+          // ignore: cast_nullable_to_non_nullable
+          : secondaryColor1 as Uint8List?,
+      secondaryColor2: secondaryColor2 == const $CopyWithPlaceholder()
+          ? _value.secondaryColor2
+          // ignore: cast_nullable_to_non_nullable
+          : secondaryColor2 as Uint8List?,
+      secondaryColor3: secondaryColor3 == const $CopyWithPlaceholder()
+          ? _value.secondaryColor3
+          // ignore: cast_nullable_to_non_nullable
+          : secondaryColor3 as Uint8List?,
+      secondaryColor4: secondaryColor4 == const $CopyWithPlaceholder()
+          ? _value.secondaryColor4
+          // ignore: cast_nullable_to_non_nullable
+          : secondaryColor4 as Uint8List?,
+      transmissionDistance: transmissionDistance == const $CopyWithPlaceholder()
+          ? _value.transmissionDistance
+          // ignore: cast_nullable_to_non_nullable
+          : transmissionDistance as num?,
+      tags: tags == const $CopyWithPlaceholder()
+          ? _value.tags
+          // ignore: cast_nullable_to_non_nullable
+          : tags as List<String>?,
+      density: density == const $CopyWithPlaceholder()
+          ? _value.density
+          // ignore: cast_nullable_to_non_nullable
+          : density as num?,
+      filamentDiameter: filamentDiameter == const $CopyWithPlaceholder()
+          ? _value.filamentDiameter
+          // ignore: cast_nullable_to_non_nullable
+          : filamentDiameter as num?,
+      shoreHardnessA: shoreHardnessA == const $CopyWithPlaceholder()
+          ? _value.shoreHardnessA
+          // ignore: cast_nullable_to_non_nullable
+          : shoreHardnessA as int?,
+      shoreHardnessD: shoreHardnessD == const $CopyWithPlaceholder()
+          ? _value.shoreHardnessD
+          // ignore: cast_nullable_to_non_nullable
+          : shoreHardnessD as int?,
+      minNozzleDiameter: minNozzleDiameter == const $CopyWithPlaceholder()
+          ? _value.minNozzleDiameter
+          // ignore: cast_nullable_to_non_nullable
+          : minNozzleDiameter as num?,
+      minPrintTemperature: minPrintTemperature == const $CopyWithPlaceholder()
+          ? _value.minPrintTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : minPrintTemperature as int?,
+      maxPrintTemperature: maxPrintTemperature == const $CopyWithPlaceholder()
+          ? _value.maxPrintTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : maxPrintTemperature as int?,
+      preheatTemperature: preheatTemperature == const $CopyWithPlaceholder()
+          ? _value.preheatTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : preheatTemperature as int?,
+      minBedTemperature: minBedTemperature == const $CopyWithPlaceholder()
+          ? _value.minBedTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : minBedTemperature as int?,
+      maxBedTemperature: maxBedTemperature == const $CopyWithPlaceholder()
+          ? _value.maxBedTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : maxBedTemperature as int?,
+      minChamberTemperature:
+          minChamberTemperature == const $CopyWithPlaceholder()
+          ? _value.minChamberTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : minChamberTemperature as int?,
+      maxChamberTemperature:
+          maxChamberTemperature == const $CopyWithPlaceholder()
+          ? _value.maxChamberTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : maxChamberTemperature as int?,
+      chamberTemperature: chamberTemperature == const $CopyWithPlaceholder()
+          ? _value.chamberTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : chamberTemperature as int?,
+      containerWidth: containerWidth == const $CopyWithPlaceholder()
+          ? _value.containerWidth
+          // ignore: cast_nullable_to_non_nullable
+          : containerWidth as int?,
+      containerOuterDiameter:
+          containerOuterDiameter == const $CopyWithPlaceholder()
+          ? _value.containerOuterDiameter
+          // ignore: cast_nullable_to_non_nullable
+          : containerOuterDiameter as int?,
+      containerInnerDiameter:
+          containerInnerDiameter == const $CopyWithPlaceholder()
+          ? _value.containerInnerDiameter
+          // ignore: cast_nullable_to_non_nullable
+          : containerInnerDiameter as int?,
+      containerHoleDiameter:
+          containerHoleDiameter == const $CopyWithPlaceholder()
+          ? _value.containerHoleDiameter
+          // ignore: cast_nullable_to_non_nullable
+          : containerHoleDiameter as int?,
+      viscosity18c: viscosity18c == const $CopyWithPlaceholder()
+          ? _value.viscosity18c
+          // ignore: cast_nullable_to_non_nullable
+          : viscosity18c as num?,
+      viscosity25c: viscosity25c == const $CopyWithPlaceholder()
+          ? _value.viscosity25c
+          // ignore: cast_nullable_to_non_nullable
+          : viscosity25c as num?,
+      viscosity40c: viscosity40c == const $CopyWithPlaceholder()
+          ? _value.viscosity40c
+          // ignore: cast_nullable_to_non_nullable
+          : viscosity40c as num?,
+      viscosity60c: viscosity60c == const $CopyWithPlaceholder()
+          ? _value.viscosity60c
+          // ignore: cast_nullable_to_non_nullable
+          : viscosity60c as num?,
+      containerVolumetricCapacity:
+          containerVolumetricCapacity == const $CopyWithPlaceholder()
+          ? _value.containerVolumetricCapacity
+          // ignore: cast_nullable_to_non_nullable
+          : containerVolumetricCapacity as num?,
+      cureWavelength: cureWavelength == const $CopyWithPlaceholder()
+          ? _value.cureWavelength
+          // ignore: cast_nullable_to_non_nullable
+          : cureWavelength as int?,
+    );
+  }
+}
+
+extension $OpenPrintTagMainDataCopyWith on OpenPrintTagMainData {
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfOpenPrintTagMainData.copyWith(...)` or `instanceOfOpenPrintTagMainData.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$OpenPrintTagMainDataCWProxy get copyWith =>
+      _$OpenPrintTagMainDataCWProxyImpl(this);
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
