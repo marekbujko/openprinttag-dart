@@ -6,11 +6,7 @@ class CborUtils {
     try {
       final Stream<List<int>> stream = Stream<List<int>>.value(data);
       final CborValue decoded = await stream.transform(cbor.decoder).first;
-
-      if (decoded is CborMap) {
-        return decoded;
-      }
-      return null;
+      return decoded is CborMap ? decoded : null;
     } catch (_) {
       return null;
     }

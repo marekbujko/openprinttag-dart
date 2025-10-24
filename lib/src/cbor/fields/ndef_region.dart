@@ -32,7 +32,6 @@ class NdefRegion {
       return <String, dynamic>{};
     }
 
-    // Work directly with CBOR types - no conversion needed!
     final Map<CborSmallInt, CborValue> cborData = decoded
         .cast<CborSmallInt, CborValue>();
 
