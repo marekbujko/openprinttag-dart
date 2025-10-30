@@ -21,86 +21,99 @@ class OpenPrintTagDecoder {
   });
 
   Future<OpenPrintTagData> decodePayload(Uint8List payload) async {
-    final CborMap? decoded = await CborUtils.decodeCborMap(payload);
+    final CborMap? metaCborMap = await CborUtils.getFirstCborMap(payload);
 
-    if (decoded == null) {
+    if (metaCborMap == null) {
       throw const FormatException('Could not decode CBOR map from payload');
     }
+    final int metaSize = cbor.encode(metaCborMap).length;
 
-    final CborMap cborMap = decoded;
-
-    // Convert CborMap keys to native int values
-    final Map<int, dynamic> firstMap = <int, dynamic>{};
-    for (final MapEntry<CborValue, CborValue> entry in cborMap.entries) {
-      final int key = (entry.key as CborSmallInt).value;
-      firstMap[key] = entry.value;
-    }
-
-    final bool hasMeta = firstMap.keys.any((int k) => k >= 0 && k <= 3);
-    if (!hasMeta) {
-      throw const FormatException('Invalid payload: meta section missing');
-    }
-
-    final List<int> metaBytes = cbor.encode(cborMap);
-    final int metaSize = metaBytes.length;
-
-    final NdefRegion metaRegion = NdefRegion(
-      offset: 0,
-      size: metaSize,
-      fields: metaFields,
+    final Map<String, dynamic> metaData = await _readMetaRegion(
+      payload,
+      metaSize,
     );
-    final Map<String, dynamic> metaData = await metaRegion.read(payload);
-
-    final int mainOffset = metaData['main_region_offset'] as int? ?? metaSize;
-    final int? mainSize = metaData['main_region_size'] as int?;
-    final int? auxOffset = metaData['aux_region_offset'] as int?;
-    final int? auxSize = metaData['aux_region_size'] as int?;
-    final List<int> regionStops = <int>[
-      mainOffset,
-      if (auxOffset != null) auxOffset,
-      payload.length,
-    ]..sort();
-
-    final int actualMainSize =
-        mainSize ?? _calculateRegionSize(mainOffset, regionStops);
-    final int? actualAuxSize = auxOffset != null
-        ? (auxSize ?? _calculateRegionSize(auxOffset, regionStops))
-        : null;
-
-    final NdefRegion mainRegion = NdefRegion(
-      offset: mainOffset,
-      size: actualMainSize,
-      fields: mainFields,
+    final Map<String, dynamic> mainData = await _readMainRegion(
+      payload,
+      metaData,
+      metaSize,
     );
-
-    final NdefRegion? auxRegion = auxOffset != null && actualAuxSize != null
-        ? NdefRegion(offset: auxOffset, size: actualAuxSize, fields: auxFields)
-        : null;
-
-    final Map<String, dynamic> mainData = await mainRegion.read(payload);
-    final Map<String, dynamic>? auxData = auxRegion != null
-        ? await auxRegion.read(payload)
-        : null;
+    final Map<String, dynamic>? auxData = await _readAuxRegion(
+      payload,
+      metaData,
+    );
 
     return OpenPrintTagData(
-      main: mainData.isNotEmpty
-          ? OpenPrintTagMainData.fromJson(mainData)
-          : null,
+      meta: OpenPrintTagMetaData.fromJson(metaData),
+      main: OpenPrintTagMainData.fromJson(mainData),
       aux: auxData != null && auxData.isNotEmpty
           ? OpenPrintTagAuxData.fromJson(auxData)
-          : null,
-      meta: metaData.isNotEmpty
-          ? OpenPrintTagMetaData.fromJson(metaData)
           : null,
     );
   }
 
-  int _calculateRegionSize(int offset, List<int> stops) {
-    for (final int stop in stops) {
-      if (stop > offset) {
-        return stop - offset;
-      }
+  Future<Map<String, dynamic>> _readMetaRegion(
+    Uint8List payload,
+    int metaSize,
+  ) async {
+    return await _readRegion(
+      payload,
+      offset: 0,
+      size: metaSize,
+      fields: metaFields,
+    );
+  }
+
+  Future<Map<String, dynamic>> _readMainRegion(
+    Uint8List payload,
+    Map<String, dynamic> metaData,
+    int metaSize,
+  ) async {
+    final int mainOffset = metaData['main_region_offset'] as int? ?? metaSize;
+    final int? mainSize = metaData['main_region_size'] as int?;
+    final int? auxOffset = metaData['aux_region_offset'] as int?;
+
+    final int actualMainSize =
+        mainSize ?? (auxOffset ?? payload.length) - mainOffset;
+
+    return await _readRegion(
+      payload,
+      offset: mainOffset,
+      size: actualMainSize,
+      fields: mainFields,
+    );
+  }
+
+  Future<Map<String, dynamic>?> _readAuxRegion(
+    Uint8List payload,
+    Map<String, dynamic> metaData,
+  ) async {
+    final int? auxOffset = metaData['aux_region_offset'] as int?;
+    if (auxOffset == null) {
+      return null;
     }
-    return 0;
+
+    final int? auxSize = metaData['aux_region_size'] as int?;
+    final int actualAuxSize = auxSize ?? payload.length - auxOffset;
+
+    return await _readRegion(
+      payload,
+      offset: auxOffset,
+      size: actualAuxSize,
+      fields: auxFields,
+    );
+  }
+
+  Future<Map<String, dynamic>> _readRegion(
+    Uint8List payload, {
+    required int offset,
+    required int size,
+    required FieldsManager fields,
+  }) async {
+    final NdefRegion region = NdefRegion(
+      offset: offset,
+      size: size,
+      fields: fields,
+    );
+    return await region.read(payload);
   }
 }

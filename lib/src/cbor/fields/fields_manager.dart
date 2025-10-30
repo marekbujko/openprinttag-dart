@@ -105,6 +105,10 @@ class FieldsManager {
     final Map<int, String> items = <int, String>{};
 
     for (final Map<String, Object?> item in enumData) {
+      if (item['deprecated'] == true) {
+        continue;
+      }
+
       final int key = item[indexField] as int;
       final String name = item[nameField] as String;
 
@@ -130,13 +134,15 @@ class FieldsManager {
 
   Map<String, dynamic> decode(Map<CborSmallInt, CborValue> data) {
     final Map<String, dynamic> result = <String, dynamic>{};
+    final Map<int, CborValue> unknownFields = <int, CborValue>{};
 
     for (final MapEntry<CborSmallInt, CborValue> entry in data.entries) {
       final int key = entry.key.value;
       final Field? field = fieldsByKey[key];
 
       if (field == null) {
-        throw ArgumentError('Unknown field key: $key');
+        unknownFields[key] = entry.value;
+        continue;
       }
 
       try {
@@ -146,6 +152,10 @@ class FieldsManager {
           'Error decoding field ${field.name} (key $key): $e',
         );
       }
+    }
+
+    if (unknownFields.isNotEmpty) {
+      result['unknown_fields'] = unknownFields;
     }
 
     return result;
@@ -168,6 +178,15 @@ class FieldsManager {
 
     for (final MapEntry<String, dynamic> entry in data.entries) {
       if (entry.value == null) {
+        continue;
+      }
+
+      if (entry.key == 'unknown_fields') {
+        if (entry.value is Map<int, CborValue>) {
+          final Map<int, CborValue> unknownFields =
+              entry.value as Map<int, CborValue>;
+          result.addAll(unknownFields);
+        }
         continue;
       }
 

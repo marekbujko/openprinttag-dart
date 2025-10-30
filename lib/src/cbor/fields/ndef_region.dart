@@ -22,7 +22,7 @@ class NdefRegion {
       payloadData.sublist(offset, offset + size),
     );
 
-    final CborMap? decoded = await CborUtils.decodeCborMap(regionData);
+    final CborMap? decoded = await CborUtils.getFirstCborMap(regionData);
 
     if (decoded == null) {
       throw const FormatException('Could not decode CBOR map from region');

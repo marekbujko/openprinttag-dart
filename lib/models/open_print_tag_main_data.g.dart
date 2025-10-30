@@ -113,6 +113,8 @@ abstract class _$OpenPrintTagMainDataCWProxy {
 
   OpenPrintTagMainData cureWavelength(int? cureWavelength);
 
+  OpenPrintTagMainData unknownFields(Map<int, CborValue>? unknownFields);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagMainData(...).copyWith.fieldName(value)`.
   ///
@@ -173,6 +175,7 @@ abstract class _$OpenPrintTagMainDataCWProxy {
     num? viscosity60c,
     num? containerVolumetricCapacity,
     int? cureWavelength,
+    Map<int, CborValue>? unknownFields,
   });
 }
 
@@ -393,6 +396,10 @@ class _$OpenPrintTagMainDataCWProxyImpl
       call(cureWavelength: cureWavelength);
 
   @override
+  OpenPrintTagMainData unknownFields(Map<int, CborValue>? unknownFields) =>
+      call(unknownFields: unknownFields);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagMainData(...).copyWith.fieldName(value)`.
   ///
@@ -453,6 +460,7 @@ class _$OpenPrintTagMainDataCWProxyImpl
     Object? viscosity60c = const $CopyWithPlaceholder(),
     Object? containerVolumetricCapacity = const $CopyWithPlaceholder(),
     Object? cureWavelength = const $CopyWithPlaceholder(),
+    Object? unknownFields = const $CopyWithPlaceholder(),
   }) {
     return OpenPrintTagMainData(
       instanceUuid: instanceUuid == const $CopyWithPlaceholder()
@@ -674,6 +682,10 @@ class _$OpenPrintTagMainDataCWProxyImpl
           ? _value.cureWavelength
           // ignore: cast_nullable_to_non_nullable
           : cureWavelength as int?,
+      unknownFields: unknownFields == const $CopyWithPlaceholder()
+          ? _value.unknownFields
+          // ignore: cast_nullable_to_non_nullable
+          : unknownFields as Map<int, CborValue>?,
     );
   }
 }

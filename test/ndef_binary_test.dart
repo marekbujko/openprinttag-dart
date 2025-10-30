@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cbor/cbor.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:open_print_tag/open_print_tag.dart';
 import 'package:test/test.dart';
@@ -29,6 +30,98 @@ void main() {
     test('loads and parses unknown_data_2.bin', () async {
       await _testBinaryFile('test/fixtures/unknown_data_2.bin', parser);
     });
+  });
+
+  group('Update AUX section only', () {
+    test('01_data.bin: update consumed_weight in AUX', () async {
+      final File file = File('test/fixtures/01_data.bin');
+      final Uint8List bytes = await file.readAsBytes();
+
+      final Uint8List? ndefBytes = _extractNdefTlv(bytes);
+      expect(ndefBytes, isNotNull);
+
+      final List<ndef.NDEFRecord> records = ndef.decodeRawNdefMessage(
+        ndefBytes!,
+      );
+      final Uint8List? openPrintTagPayload = _findOpenPrintTagPayload(records);
+      expect(openPrintTagPayload, isNotNull);
+
+      final OpenPrintTagData originalData = await parser.decode(
+        openPrintTagPayload!,
+      );
+
+      print('\n📊 BEFORE AUX update:');
+      print(
+        '   consumed_weight: ${originalData.aux?.consumedWeight ?? "null"}',
+      );
+      print('   workgroup: ${originalData.aux?.workgroup ?? "null"}');
+      print('   Payload size: ${openPrintTagPayload.length} bytes');
+
+      const OpenPrintTagAuxData updatedAux = OpenPrintTagAuxData(
+        consumedWeight: 10.0,
+      );
+
+      final Uint8List updatedPayload = await parser.updateAux(
+        openPrintTagPayload,
+        updatedAux,
+      );
+
+      final OpenPrintTagData updatedData = await parser.decode(updatedPayload);
+
+      print('\n📊 AFTER AUX update:');
+      print('   consumed_weight: ${updatedData.aux?.consumedWeight}');
+      print('   workgroup: ${updatedData.aux?.workgroup ?? "null"}');
+      print('   Payload size: ${updatedPayload.length} bytes');
+
+      expect(updatedData.aux?.consumedWeight, 10.0);
+      expect(updatedPayload.length, openPrintTagPayload.length);
+      expect(updatedData.main?.materialClass, originalData.main?.materialClass);
+      expect(updatedData.main?.materialType, originalData.main?.materialType);
+
+      print('✅ AUX section successfully updated\n');
+    });
+  });
+
+  group('Round-trip encode/decode with modifications', () {
+    test(
+      '01_data.bin: modify value and verify unknown fields preserved',
+      () async {
+        await _testRoundTripWithModification(
+          'test/fixtures/01_data.bin',
+          parser,
+        );
+      },
+    );
+
+    test(
+      '02_data.bin: modify value and verify unknown fields preserved',
+      () async {
+        await _testRoundTripWithModification(
+          'test/fixtures/02_data.bin',
+          parser,
+        );
+      },
+    );
+
+    test(
+      'unknown_data_1.bin: modify value and verify unknown fields preserved',
+      () async {
+        await _testRoundTripWithModification(
+          'test/fixtures/unknown_data_1.bin',
+          parser,
+        );
+      },
+    );
+
+    test(
+      'unknown_data_2.bin: modify value and verify unknown fields preserved',
+      () async {
+        await _testRoundTripWithModification(
+          'test/fixtures/unknown_data_2.bin',
+          parser,
+        );
+      },
+    );
   });
 }
 
@@ -131,4 +224,137 @@ Uint8List? _findOpenPrintTagPayload(List<ndef.NDEFRecord> records) {
     }
   }
   return null;
+}
+
+Future<void> _testRoundTripWithModification(
+  String filePath,
+  OpenPrintTagParser parser,
+) async {
+  final File file = File(filePath);
+  final Uint8List bytes = await file.readAsBytes();
+
+  final Uint8List? ndefBytes = _extractNdefTlv(bytes);
+  expect(ndefBytes, isNotNull);
+
+  final List<ndef.NDEFRecord> records = ndef.decodeRawNdefMessage(ndefBytes!);
+  final Uint8List? openPrintTagPayload = _findOpenPrintTagPayload(records);
+  expect(openPrintTagPayload, isNotNull);
+
+  final OpenPrintTagData originalData = await parser.decode(
+    openPrintTagPayload!,
+  );
+
+  final Map<int, dynamic>? originalMainUnknownFields =
+      originalData.main?.unknownFields;
+  final Map<int, dynamic>? originalAuxUnknownFields =
+      originalData.aux?.unknownFields;
+  final OpenPrintTagMetaData? originalMeta = originalData.meta;
+
+  final OpenPrintTagMainData? modifiedMain = originalData.main?.copyWith(
+    materialClass: originalData.main?.materialClass ?? 'FFF',
+    materialType: originalData.main?.materialType ?? 'PLA',
+    minPrintTemperature: (originalData.main?.minPrintTemperature ?? 200) + 10,
+  );
+
+  final OpenPrintTagData modifiedData = OpenPrintTagData(
+    meta: originalData.meta,
+    main: modifiedMain,
+    aux: originalData.aux,
+  );
+
+  final Uint8List encodedPayload = originalMeta != null
+      ? parser.encode(modifiedData, size: openPrintTagPayload.length)
+      : parser.encode(modifiedData, size: 320);
+
+  final OpenPrintTagData redecodedData = await parser.decode(encodedPayload);
+
+  expect(
+    redecodedData.main?.minPrintTemperature,
+    (originalData.main?.minPrintTemperature ?? 200) + 10,
+  );
+
+  if (originalMainUnknownFields != null) {
+    expect(redecodedData.main?.unknownFields, isNotNull);
+    expect(
+      redecodedData.main!.unknownFields!.length,
+      originalMainUnknownFields.length,
+    );
+
+    for (final MapEntry<int, dynamic> entry
+        in originalMainUnknownFields.entries) {
+      expect(redecodedData.main!.unknownFields!.containsKey(entry.key), true);
+      _compareUnknownFieldValues(
+        entry.value,
+        redecodedData.main!.unknownFields![entry.key],
+        'MAIN field ${entry.key}',
+      );
+    }
+  }
+
+  if (originalAuxUnknownFields != null) {
+    expect(redecodedData.aux?.unknownFields, isNotNull);
+    expect(
+      redecodedData.aux!.unknownFields!.length,
+      originalAuxUnknownFields.length,
+    );
+
+    for (final MapEntry<int, dynamic> entry
+        in originalAuxUnknownFields.entries) {
+      expect(redecodedData.aux!.unknownFields!.containsKey(entry.key), true);
+      _compareUnknownFieldValues(
+        entry.value,
+        redecodedData.aux!.unknownFields![entry.key],
+        'AUX field ${entry.key}',
+      );
+    }
+  }
+
+  expect(redecodedData.meta, isNotNull);
+  expect(redecodedData.meta!.auxRegionOffset, isNotNull);
+}
+
+void _compareUnknownFieldValues(
+  dynamic original,
+  dynamic redecoded,
+  String fieldName,
+) {
+  if (original.runtimeType != redecoded.runtimeType) {
+    fail(
+      '$fieldName: type mismatch - ${original.runtimeType} vs ${redecoded.runtimeType}',
+    );
+  }
+
+  if (original is CborSmallInt && redecoded is CborSmallInt) {
+    expect(
+      redecoded.value,
+      original.value,
+      reason: '$fieldName value mismatch',
+    );
+  } else if (original is CborInt && redecoded is CborInt) {
+    expect(
+      redecoded.toInt(),
+      original.toInt(),
+      reason: '$fieldName value mismatch',
+    );
+  } else if (original is CborString && redecoded is CborString) {
+    expect(
+      redecoded.toString(),
+      original.toString(),
+      reason: '$fieldName value mismatch',
+    );
+  } else if (original is CborBytes && redecoded is CborBytes) {
+    expect(
+      redecoded.bytes,
+      original.bytes,
+      reason: '$fieldName value mismatch',
+    );
+  } else if (original is CborFloat && redecoded is CborFloat) {
+    expect(
+      redecoded.value,
+      original.value,
+      reason: '$fieldName value mismatch',
+    );
+  } else {
+    expect(redecoded, original, reason: '$fieldName value mismatch');
+  }
 }

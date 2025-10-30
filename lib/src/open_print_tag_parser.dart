@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:open_print_tag/open_print_tag.dart';
+import 'package:open_print_tag/src/cbor/update.dart';
 import 'package:open_print_tag/src/data/aux_fields.data.g.dart' as aux_data;
 import 'package:open_print_tag/src/data/main_fields.data.g.dart' as main_data;
 import 'package:open_print_tag/src/data/material_class_enum.data.g.dart'
@@ -15,12 +16,15 @@ import 'package:open_print_tag/src/data/write_protection_enum.data.g.dart'
 class OpenPrintTagParser {
   final OpenPrintTagDecoder _decoder;
   final OpenPrintTagEncoder _encoder;
+  final OpenPrintTagUpdate _update;
 
   OpenPrintTagParser._({
     required OpenPrintTagDecoder decoder,
     required OpenPrintTagEncoder encoder,
+    required OpenPrintTagUpdate update,
   }) : _decoder = decoder,
-       _encoder = encoder;
+       _encoder = encoder,
+       _update = update;
 
   /// Creates a parser using generated data constants
   static OpenPrintTagParser create() {
@@ -59,17 +63,21 @@ class OpenPrintTagParser {
     required FieldsManager mainFields,
     required FieldsManager auxFields,
   }) {
+    final OpenPrintTagDecoder decoder = OpenPrintTagDecoder(
+      metaFields: metaFields,
+      mainFields: mainFields,
+      auxFields: auxFields,
+    );
+    final OpenPrintTagEncoder encoder = OpenPrintTagEncoder(
+      metaFields: metaFields,
+      mainFields: mainFields,
+      auxFields: auxFields,
+    );
+
     return OpenPrintTagParser._(
-      decoder: OpenPrintTagDecoder(
-        metaFields: metaFields,
-        mainFields: mainFields,
-        auxFields: auxFields,
-      ),
-      encoder: OpenPrintTagEncoder(
-        metaFields: metaFields,
-        mainFields: mainFields,
-        auxFields: auxFields,
-      ),
+      decoder: decoder,
+      encoder: encoder,
+      update: OpenPrintTagUpdate(decoder: decoder, encoder: encoder),
     );
   }
 
@@ -77,7 +85,11 @@ class OpenPrintTagParser {
     return await _decoder.decodePayload(payload);
   }
 
-  Uint8List encode(OpenPrintTagData data) {
-    return _encoder.encodePayload(data);
+  Uint8List encode(OpenPrintTagData data, {required int size}) {
+    return _encoder.encodePayload(data, size: size);
+  }
+
+  Future<Uint8List> updateAux(Uint8List payload, OpenPrintTagAuxData auxData) {
+    return _update.updateAuxPayload(payload, auxData);
   }
 }

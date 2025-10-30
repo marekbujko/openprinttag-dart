@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cbor/cbor.dart';
+import 'package:open_print_tag/models/open_print_tag_aux_data.dart';
 import 'package:open_print_tag/models/open_print_tag_data.dart';
 import 'package:open_print_tag/src/cbor/cbor_utils.dart';
 import 'package:open_print_tag/src/cbor/fields/fields_manager.dart';
@@ -16,98 +17,140 @@ class OpenPrintTagEncoder {
     required this.auxFields,
   });
 
-  Uint8List encodePayload(OpenPrintTagData data) {
+  Uint8List encodePayload(OpenPrintTagData data, {required int size}) {
     if (data.main == null) {
       throw ArgumentError('Main data must be provided');
     }
-    final Map<String, dynamic> mainJson = data.main!.toJson();
-    CborUtils.removeNullValues(mainJson);
-    final Map<int, CborValue> mainEncoded = mainFields.encode(mainJson);
-    final Uint8List mainBytes = Uint8List.fromList(
-      cbor.encode(CborMap(_toCborMap(mainEncoded))),
+
+    const int auxSize = 32;
+    final int auxOffset = size - auxSize;
+
+    final Map<String, dynamic> metaJson = <String, dynamic>{
+      'aux_region_offset': auxOffset,
+    };
+    final Uint8List metaBytes = _encodeSection(
+      metaJson,
+      metaFields,
+      indefinite: false,
     );
 
-    Uint8List? auxBytes;
-    if (data.aux != null) {
-      final Map<String, dynamic> auxJson = data.aux!.toJson();
-      CborUtils.removeNullValues(auxJson);
-      final Map<int, CborValue> auxEncoded = auxFields.encode(auxJson);
-      auxBytes = Uint8List.fromList(
-        cbor.encode(CborMap(_toCborMap(auxEncoded))),
+    final Uint8List mainBytes = _encodeSection(
+      data.main!.toJson(),
+      mainFields,
+      indefinite: true,
+    );
+
+    final Uint8List auxBytes = _encodeSection(
+      data.aux?.toJson() ?? <String, dynamic>{},
+      auxFields,
+      indefinite: true,
+    );
+
+    final int mainOffset = metaBytes.length;
+    final int availableMainSpace = auxOffset - mainOffset;
+
+    if (mainBytes.length > availableMainSpace) {
+      throw ArgumentError(
+        'MAIN section (${mainBytes.length} bytes) exceeds available space ($availableMainSpace bytes)',
       );
     }
 
-    final Map<String, dynamic> metaJson =
-        data.meta?.toJson() ?? <String, dynamic>{};
-    CborUtils.removeNullValues(metaJson);
-    final bool userProvidedMainOffset = metaJson.containsKey(
-      'main_region_offset',
-    );
-    final bool userProvidedAuxOffset = metaJson.containsKey(
-      'aux_region_offset',
-    );
-
-    Uint8List? metaBytesFinal;
-    int iteration = 0;
-    int metaSize = 0;
-
-    while (iteration < 10) {
-      final int mainOffset = userProvidedMainOffset
-          ? metaJson['main_region_offset'] as int
-          : (metaSize == 0 ? 4 : metaSize);
-
-      final int? auxOffset = auxBytes != null
-          ? (userProvidedAuxOffset
-                ? metaJson['aux_region_offset'] as int
-                : mainOffset + mainBytes.length)
-          : null;
-
-      if (!userProvidedMainOffset) {
-        metaJson['main_region_offset'] = mainOffset;
-      }
-
-      metaJson.remove('main_region_size');
-      metaJson.remove('aux_region_size');
-
-      if (auxOffset != null && !userProvidedAuxOffset) {
-        metaJson['aux_region_offset'] = auxOffset;
-      }
-
-      final Map<int, CborValue> metaEncoded = metaFields.encode(metaJson);
-      final Uint8List metaBytes = Uint8List.fromList(
-        cbor.encode(CborMap(_toCborMap(metaEncoded))),
-      );
-
-      if (metaBytes.length == metaSize) {
-        metaBytesFinal = metaBytes;
-        break;
-      }
-
-      metaSize = metaBytes.length;
-      iteration++;
-    }
-
-    if (metaBytesFinal == null) {
-      throw StateError(
-        'Could not stabilize meta region size after 10 iterations',
+    if (auxBytes.length > auxSize) {
+      throw ArgumentError(
+        'AUX section (${auxBytes.length} bytes) exceeds allocated size ($auxSize bytes)',
       );
     }
 
+    return _buildPayload(
+      metaBytes,
+      mainBytes,
+      auxBytes,
+      auxOffset,
+      auxSize,
+      size,
+    );
+  }
+
+  Uint8List updateAux(
+    Uint8List payload,
+    OpenPrintTagAuxData auxData,
+    int auxOffset,
+  ) {
+    final int auxSize = payload.length - auxOffset;
+
+    final Uint8List auxBytes = _encodeSection(
+      auxData.toJson(),
+      auxFields,
+      indefinite: true,
+    );
+
+    if (auxBytes.length > auxSize) {
+      throw ArgumentError(
+        'AUX section (${auxBytes.length} bytes) exceeds allocated size ($auxSize bytes)',
+      );
+    }
+
+    final Uint8List result = Uint8List(payload.length);
+    result.setRange(0, auxOffset, payload);
+    result.setRange(auxOffset, auxOffset + auxBytes.length, auxBytes);
+
+    return result;
+  }
+
+  Uint8List _encodeSection(
+    Map<String, dynamic> data,
+    FieldsManager fields, {
+    required bool indefinite,
+  }) {
+    CborUtils.removeNullValues(data);
+    final Map<int, CborValue> encoded = fields.encode(data);
+
+    final Map<CborSmallInt, CborValue> cborMap = encoded.map(
+      (int key, CborValue value) =>
+          MapEntry<CborSmallInt, CborValue>(CborSmallInt(key), value),
+    );
+
+    final Uint8List bytes = Uint8List.fromList(
+      cbor.encode(
+        CborMap(
+          cborMap,
+          type: indefinite
+              ? CborLengthType.indefinite
+              : CborLengthType.definite,
+        ),
+      ),
+    );
+
+    if (bytes.length > 512) {
+      throw ArgumentError(
+        'Section size ${bytes.length} exceeds 512 byte limit',
+      );
+    }
+    return bytes;
+  }
+
+  Uint8List _buildPayload(
+    Uint8List metaBytes,
+    Uint8List mainBytes,
+    Uint8List auxBytes,
+    int auxOffset,
+    int auxSize,
+    int totalSize,
+  ) {
     final BytesBuilder builder = BytesBuilder();
-    builder.add(metaBytesFinal);
+
+    builder.add(metaBytes);
     builder.add(mainBytes);
-    if (auxBytes != null) {
-      builder.add(auxBytes);
-    }
+    _addPadding(builder, auxOffset);
+    builder.add(auxBytes);
+    _addPadding(builder, totalSize);
 
     return builder.toBytes();
   }
 
-  // Helper to convert Map<int, CborValue> to Map<CborValue, CborValue>
-  static Map<CborValue, CborValue> _toCborMap(Map<int, CborValue> map) {
-    return map.map(
-      (int k, CborValue v) =>
-          MapEntry<CborValue, CborValue>(CborSmallInt(k), v),
-    );
+  void _addPadding(BytesBuilder builder, int targetLength) {
+    if (builder.length < targetLength) {
+      builder.add(Uint8List(targetLength - builder.length));
+    }
   }
 }

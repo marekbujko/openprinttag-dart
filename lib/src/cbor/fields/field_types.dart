@@ -6,43 +6,25 @@ import 'package:ieee754/ieee754.dart';
 import 'package:uuid/uuid.dart';
 
 enum FieldType {
-  bool,
-  int,
-  number,
-  string,
-  enumeration,
-  enumArray,
-  bytes,
-  uuid,
-  timestamp;
+  bool('bool'),
+  int('int'),
+  number('number'),
+  string('string'),
+  enumeration('enum'),
+  enumArray('enum_array'),
+  bytes('bytes'),
+  uuid('uuid'),
+  timestamp('timestamp');
+
+  const FieldType(this.configName);
+
+  final String configName;
 
   static FieldType fromString(String value) {
-    return switch (value) {
-      'bool' => FieldType.bool,
-      'int' => FieldType.int,
-      'number' => FieldType.number,
-      'string' => FieldType.string,
-      'enum' => FieldType.enumeration,
-      'enum_array' => FieldType.enumArray,
-      'bytes' => FieldType.bytes,
-      'uuid' => FieldType.uuid,
-      'timestamp' => FieldType.timestamp,
-      _ => throw ArgumentError('Unknown field type: $value'),
-    };
-  }
-
-  String toConfigString() {
-    return switch (this) {
-      FieldType.bool => 'bool',
-      FieldType.int => 'int',
-      FieldType.number => 'number',
-      FieldType.string => 'string',
-      FieldType.enumeration => 'enum',
-      FieldType.enumArray => 'enum_array',
-      FieldType.bytes => 'bytes',
-      FieldType.uuid => 'uuid',
-      FieldType.timestamp => 'timestamp',
-    };
+    return values.firstWhere(
+      (FieldType type) => type.configName == value,
+      orElse: () => throw ArgumentError('Unknown field type: $value'),
+    );
   }
 }
 

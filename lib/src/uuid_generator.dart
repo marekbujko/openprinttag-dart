@@ -18,27 +18,37 @@ class OpenPrintTagUuidGenerator {
     return Uuid.unparse(hashBytes.sublist(0, 16));
   }
 
-  static String buildBrandUuid(String brandName) =>
-      _uuid.v5(OpenPrintTagConstants.uuidNamespaceBrand.toString(), brandName);
+  static String? buildBrandUuid(String? brandName) => brandName != null
+      ? _uuid.v5(OpenPrintTagConstants.uuidNamespaceBrand.toString(), brandName)
+      : null;
 
-  static String buildMaterialUuid(String brandUuid, String materialName) =>
-      _uuidV5FromBytes(
-        OpenPrintTagConstants.uuidNamespaceMaterial.toString(),
-        <int>[...Uuid.parseAsByteList(brandUuid), ...utf8.encode(materialName)],
-      );
+  static String? buildMaterialUuid(String? brandUuid, String? materialName) =>
+      brandUuid != null && materialName != null
+      ? _uuidV5FromBytes(
+          OpenPrintTagConstants.uuidNamespaceMaterial.toString(),
+          <int>[
+            ...Uuid.parseAsByteList(brandUuid),
+            ...utf8.encode(materialName),
+          ],
+        )
+      : null;
 
-  static String buildPackageUuid(String brandUuid, Object gtin) =>
-      _uuidV5FromBytes(
-        OpenPrintTagConstants.uuidNamespacePackage.toString(),
-        <int>[
-          ...Uuid.parseAsByteList(brandUuid),
-          ...utf8.encode(gtin.toString()),
-        ],
-      );
+  static String? buildPackageUuid(String? brandUuid, num? gtin) =>
+      brandUuid != null && gtin != null
+      ? _uuidV5FromBytes(
+          OpenPrintTagConstants.uuidNamespacePackage.toString(),
+          <int>[
+            ...Uuid.parseAsByteList(brandUuid),
+            ...utf8.encode(gtin.toString()),
+          ],
+        )
+      : null;
 
-  static String buildInstanceUuid(String brandUuid, List<int> nfcUidBytes) =>
-      _uuidV5FromBytes(
-        OpenPrintTagConstants.uuidNamespaceInstance.toString(),
-        <int>[...Uuid.parseAsByteList(brandUuid), ...nfcUidBytes],
-      );
+  static String? buildInstanceUuid(String? brandUuid, List<int> nfcUidBytes) =>
+      brandUuid != null
+      ? _uuidV5FromBytes(
+          OpenPrintTagConstants.uuidNamespaceInstance.toString(),
+          <int>[...Uuid.parseAsByteList(brandUuid), ...nfcUidBytes],
+        )
+      : null;
 }

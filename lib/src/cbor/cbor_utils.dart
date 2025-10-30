@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:cbor/cbor.dart';
 
 class CborUtils {
-  static Future<CborMap?> decodeCborMap(Uint8List data) async {
+  static Future<CborMap?> getFirstCborMap(Uint8List data) async {
     try {
       final Stream<List<int>> stream = Stream<List<int>>.value(data);
       final CborValue decoded = await stream.transform(cbor.decoder).first;

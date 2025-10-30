@@ -18,12 +18,11 @@ void main() {
       expect(data.materialUuid, isNotNull);
       expect(data.packageUuid, isNotNull);
 
-      final String expectedBrandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(
-        'TestBrand',
-      );
-      final String expectedMaterialUuid =
+      final String? expectedBrandUuid =
+          OpenPrintTagUuidGenerator.buildBrandUuid('TestBrand');
+      final String? expectedMaterialUuid =
           OpenPrintTagUuidGenerator.buildMaterialUuid(expectedBrandUuid, 'PLA');
-      final String expectedPackageUuid =
+      final String? expectedPackageUuid =
           OpenPrintTagUuidGenerator.buildPackageUuid(
             expectedBrandUuid,
             1234567890123,
@@ -48,12 +47,11 @@ void main() {
       expect(json['material_uuid'], isNotNull);
       expect(json['package_uuid'], isNotNull);
 
-      final String expectedBrandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(
-        'TestBrand',
-      );
-      final String expectedMaterialUuid =
+      final String? expectedBrandUuid =
+          OpenPrintTagUuidGenerator.buildBrandUuid('TestBrand');
+      final String? expectedMaterialUuid =
           OpenPrintTagUuidGenerator.buildMaterialUuid(expectedBrandUuid, 'PLA');
-      final String expectedPackageUuid =
+      final String? expectedPackageUuid =
           OpenPrintTagUuidGenerator.buildPackageUuid(
             expectedBrandUuid,
             1234567890123,
@@ -126,7 +124,7 @@ void main() {
     test('generates correct UUIDs for real data', () {
       const String brandName = 'Prusament';
       const String materialName = 'PLA Prusa Galaxy Black';
-      const String gtin = '1234';
+      const num gtin = 1234;
       final List<int> nfcUidBytes = <int>[
         0xE0,
         0x04,
@@ -145,18 +143,18 @@ void main() {
       const String expectedInstanceUuid =
           'daeec88a-be54-5138-adb2-e88bde443821';
 
-      final String brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(
+      final String? brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(
         brandName,
       );
-      final String materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
+      final String? materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
         brandUuid,
         materialName,
       );
-      final String packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
+      final String? packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
         brandUuid,
         gtin,
       );
-      final String instanceUuid = OpenPrintTagUuidGenerator.buildInstanceUuid(
+      final String? instanceUuid = OpenPrintTagUuidGenerator.buildInstanceUuid(
         brandUuid,
         nfcUidBytes,
       );

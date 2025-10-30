@@ -3,6 +3,114 @@
 part of 'open_print_tag_aux_data.dart';
 
 // **************************************************************************
+// CopyWithGenerator
+// **************************************************************************
+
+abstract class _$OpenPrintTagAuxDataCWProxy {
+  OpenPrintTagAuxData consumedWeight(num? consumedWeight);
+
+  OpenPrintTagAuxData workgroup(String? workgroup);
+
+  OpenPrintTagAuxData generalPurposeRangeUser(String? generalPurposeRangeUser);
+
+  OpenPrintTagAuxData lastStirTime(int? lastStirTime);
+
+  OpenPrintTagAuxData unknownFields(Map<int, CborValue>? unknownFields);
+
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// OpenPrintTagAuxData(...).copyWith(id: 12, name: "My name")
+  /// ```
+  OpenPrintTagAuxData call({
+    num? consumedWeight,
+    String? workgroup,
+    String? generalPurposeRangeUser,
+    int? lastStirTime,
+    Map<int, CborValue>? unknownFields,
+  });
+}
+
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfOpenPrintTagAuxData.copyWith(...)` or call `instanceOfOpenPrintTagAuxData.copyWith.fieldName(value)` for a single field.
+class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
+  const _$OpenPrintTagAuxDataCWProxyImpl(this._value);
+
+  final OpenPrintTagAuxData _value;
+
+  @override
+  OpenPrintTagAuxData consumedWeight(num? consumedWeight) =>
+      call(consumedWeight: consumedWeight);
+
+  @override
+  OpenPrintTagAuxData workgroup(String? workgroup) =>
+      call(workgroup: workgroup);
+
+  @override
+  OpenPrintTagAuxData generalPurposeRangeUser(
+    String? generalPurposeRangeUser,
+  ) => call(generalPurposeRangeUser: generalPurposeRangeUser);
+
+  @override
+  OpenPrintTagAuxData lastStirTime(int? lastStirTime) =>
+      call(lastStirTime: lastStirTime);
+
+  @override
+  OpenPrintTagAuxData unknownFields(Map<int, CborValue>? unknownFields) =>
+      call(unknownFields: unknownFields);
+
+  @override
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// OpenPrintTagAuxData(...).copyWith(id: 12, name: "My name")
+  /// ```
+  OpenPrintTagAuxData call({
+    Object? consumedWeight = const $CopyWithPlaceholder(),
+    Object? workgroup = const $CopyWithPlaceholder(),
+    Object? generalPurposeRangeUser = const $CopyWithPlaceholder(),
+    Object? lastStirTime = const $CopyWithPlaceholder(),
+    Object? unknownFields = const $CopyWithPlaceholder(),
+  }) {
+    return OpenPrintTagAuxData(
+      consumedWeight: consumedWeight == const $CopyWithPlaceholder()
+          ? _value.consumedWeight
+          // ignore: cast_nullable_to_non_nullable
+          : consumedWeight as num?,
+      workgroup: workgroup == const $CopyWithPlaceholder()
+          ? _value.workgroup
+          // ignore: cast_nullable_to_non_nullable
+          : workgroup as String?,
+      generalPurposeRangeUser:
+          generalPurposeRangeUser == const $CopyWithPlaceholder()
+          ? _value.generalPurposeRangeUser
+          // ignore: cast_nullable_to_non_nullable
+          : generalPurposeRangeUser as String?,
+      lastStirTime: lastStirTime == const $CopyWithPlaceholder()
+          ? _value.lastStirTime
+          // ignore: cast_nullable_to_non_nullable
+          : lastStirTime as int?,
+      unknownFields: unknownFields == const $CopyWithPlaceholder()
+          ? _value.unknownFields
+          // ignore: cast_nullable_to_non_nullable
+          : unknownFields as Map<int, CborValue>?,
+    );
+  }
+}
+
+extension $OpenPrintTagAuxDataCopyWith on OpenPrintTagAuxData {
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfOpenPrintTagAuxData.copyWith(...)` or `instanceOfOpenPrintTagAuxData.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$OpenPrintTagAuxDataCWProxy get copyWith =>
+      _$OpenPrintTagAuxDataCWProxyImpl(this);
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

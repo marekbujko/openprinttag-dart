@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:cbor/cbor.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:open_print_tag/src/uuid_generator.dart';
@@ -195,6 +196,9 @@ class OpenPrintTagMainData {
   @JsonKey(name: 'cure_wavelength')
   final int? cureWavelength;
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final Map<int, CborValue>? unknownFields;
+
   const OpenPrintTagMainData({
     this.instanceUuid,
     this.packageUuid,
@@ -248,82 +252,65 @@ class OpenPrintTagMainData {
     this.viscosity60c,
     this.containerVolumetricCapacity,
     this.cureWavelength,
+    this.unknownFields,
   });
 
   factory OpenPrintTagMainData.fromJson(Map<String, dynamic> json) {
     final OpenPrintTagMainData data = _$OpenPrintTagMainDataFromJson(json);
 
-    String? brandUuid = data.brandUuid;
-    String? materialUuid = data.materialUuid;
-    String? packageUuid = data.packageUuid;
+    final String? brandUuid =
+        data.brandUuid ??
+        OpenPrintTagUuidGenerator.buildBrandUuid(data.brandName);
 
-    if (brandUuid == null && data.brandName != null) {
-      brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(data.brandName!);
-    }
+    final String? materialUuid =
+        data.materialUuid ??
+        OpenPrintTagUuidGenerator.buildMaterialUuid(
+          brandUuid,
+          data.materialName,
+        );
 
-    if (materialUuid == null &&
-        brandUuid != null &&
-        data.materialName != null) {
-      materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
-        brandUuid,
-        data.materialName!,
-      );
-    }
+    final String? packageUuid =
+        data.packageUuid ??
+        OpenPrintTagUuidGenerator.buildPackageUuid(brandUuid, data.gtin);
 
-    if (packageUuid == null && brandUuid != null && data.gtin != null) {
-      packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
-        brandUuid,
-        data.gtin!,
-      );
-    }
-
-    if (brandUuid != data.brandUuid ||
-        materialUuid != data.materialUuid ||
-        packageUuid != data.packageUuid) {
-      return data.copyWith(
-        brandUuid: brandUuid,
-        materialUuid: materialUuid,
-        packageUuid: packageUuid,
-      );
-    }
-
-    return data;
+    return data.copyWith(
+      brandUuid: brandUuid,
+      materialUuid: materialUuid,
+      packageUuid: packageUuid,
+      unknownFields: json['unknown_fields'] as Map<int, CborValue>?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    String? brandUuid = this.brandUuid;
-    String? materialUuid = this.materialUuid;
-    String? packageUuid = this.packageUuid;
+    final String? brandUuid =
+        this.brandUuid ?? OpenPrintTagUuidGenerator.buildBrandUuid(brandName);
 
-    if (brandUuid == null && brandName != null) {
-      brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(brandName!);
-    }
+    final String? materialUuid =
+        this.materialUuid ??
+        OpenPrintTagUuidGenerator.buildMaterialUuid(brandUuid, materialName);
 
-    if (materialUuid == null && brandUuid != null && materialName != null) {
-      materialUuid = OpenPrintTagUuidGenerator.buildMaterialUuid(
-        brandUuid,
-        materialName!,
-      );
-    }
+    final String? packageUuid =
+        this.packageUuid ??
+        OpenPrintTagUuidGenerator.buildPackageUuid(brandUuid, gtin);
 
-    if (packageUuid == null && brandUuid != null && gtin != null) {
-      packageUuid = OpenPrintTagUuidGenerator.buildPackageUuid(
-        brandUuid,
-        gtin!,
-      );
-    }
-
-    if (brandUuid != this.brandUuid ||
+    final bool uuidsChanged =
+        brandUuid != this.brandUuid ||
         materialUuid != this.materialUuid ||
-        packageUuid != this.packageUuid) {
-      return copyWith(
-        brandUuid: brandUuid,
-        materialUuid: materialUuid,
-        packageUuid: packageUuid,
-      ).toJson();
+        packageUuid != this.packageUuid;
+
+    final Map<String, dynamic> json = uuidsChanged
+        ? copyWith(
+            brandUuid: brandUuid,
+            materialUuid: materialUuid,
+            packageUuid: packageUuid,
+          ).toJson()
+        : _$OpenPrintTagMainDataToJson(this);
+
+    if (unknownFields != null && unknownFields!.isNotEmpty) {
+      json['unknown_fields'] = unknownFields;
     }
 
-    return _$OpenPrintTagMainDataToJson(this);
+    return json;
   }
 
   /// Converts JSON value to Uint8List
