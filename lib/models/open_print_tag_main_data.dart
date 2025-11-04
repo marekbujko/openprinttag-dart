@@ -1,5 +1,5 @@
+import 'dart:typed_data';
 import 'package:cbor/cbor.dart';
-import 'package:color/color.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:open_print_tag/src/uuid_generator.dart';
@@ -79,45 +79,45 @@ class OpenPrintTagMainData {
   // Colors
   @JsonKey(
     name: 'primary_color',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? primaryColor;
+  final Uint8List? primaryColor;
 
   @JsonKey(
     name: 'secondary_color_0',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? secondaryColor0;
+  final Uint8List? secondaryColor0;
 
   @JsonKey(
     name: 'secondary_color_1',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? secondaryColor1;
+  final Uint8List? secondaryColor1;
 
   @JsonKey(
     name: 'secondary_color_2',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? secondaryColor2;
+  final Uint8List? secondaryColor2;
 
   @JsonKey(
     name: 'secondary_color_3',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? secondaryColor3;
+  final Uint8List? secondaryColor3;
 
   @JsonKey(
     name: 'secondary_color_4',
-    fromJson: _colorFromJson,
-    toJson: _colorToJson,
+    fromJson: _uint8ListFromJson,
+    toJson: _uint8ListToJson,
   )
-  final Color? secondaryColor4;
+  final Uint8List? secondaryColor4;
 
   // Material properties
   @JsonKey(name: 'transmission_distance')
@@ -313,25 +313,43 @@ class OpenPrintTagMainData {
     return json;
   }
 
-  static Color? _colorFromJson(dynamic value) {
+  /// Converts JSON value to Uint8List
+  static Uint8List? _uint8ListFromJson(dynamic value) {
     if (value == null) {
       return null;
     }
-
-    if (value is Map && value.containsKey('hex')) {
-      final String hex = (value['hex'] as String).replaceAll('#', '');
-      return HexColor(hex);
+    if (value is Uint8List) {
+      return value;
     }
-
+    if (value is List) {
+      return Uint8List.fromList(value.cast<int>());
+    }
+    if (value is Map && value.containsKey('hex')) {
+      return _hexToBytes(value['hex'] as String);
+    }
     return null;
   }
 
-  static Map<String, String>? _colorToJson(Color? color) {
-    if (color == null) {
+  /// Converts Uint8List to JSON value
+  static dynamic _uint8ListToJson(Uint8List? bytes) {
+    if (bytes == null) {
       return null;
     }
+    return <String, String>{'hex': _toHex(bytes)};
+  }
 
-    final String hexString = color.toHexColor().toString();
-    return <String, String>{'hex': hexString};
+  static Uint8List _hexToBytes(String hex) {
+    final String cleaned = hex.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
+    final List<int> bytes = <int>[];
+    for (int i = 0; i < cleaned.length; i += 2) {
+      bytes.add(int.parse(cleaned.substring(i, i + 2), radix: 16));
+    }
+    return Uint8List.fromList(bytes);
+  }
+
+  static String _toHex(Uint8List bytes) {
+    return bytes
+        .map((int byte) => byte.toRadixString(16).padLeft(2, '0'))
+        .join();
   }
 }
