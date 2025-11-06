@@ -23,7 +23,8 @@ class OpenPrintTagEncoder {
     }
 
     const int auxSize = 32;
-    final int auxOffset = size - auxSize;
+    // Align aux offset to 4-byte boundary
+    final int auxOffset = ((size - auxSize) ~/ 4) * 4;
 
     final Map<String, dynamic> metaJson = <String, dynamic>{
       'aux_region_offset': auxOffset,
@@ -43,7 +44,7 @@ class OpenPrintTagEncoder {
     final Uint8List auxBytes = _encodeSection(
       data.aux?.toJson() ?? <String, dynamic>{},
       auxFields,
-      indefinite: true,
+      indefinite: false,
     );
 
     final int mainOffset = metaBytes.length;
@@ -81,7 +82,7 @@ class OpenPrintTagEncoder {
     final Uint8List auxBytes = _encodeSection(
       auxData.toJson(),
       auxFields,
-      indefinite: true,
+      indefinite: false,
     );
 
     if (auxBytes.length > auxSize) {

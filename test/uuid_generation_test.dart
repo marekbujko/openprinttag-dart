@@ -33,7 +33,7 @@ void main() {
       expect(data.packageUuid, equals(expectedPackageUuid));
     });
 
-    test('generates UUIDs on serialization', () {
+    test('does not generate UUIDs on serialization without fromJson', () {
       const OpenPrintTagMainData data = OpenPrintTagMainData(
         brandName: 'TestBrand',
         materialName: 'PLA',
@@ -43,23 +43,10 @@ void main() {
 
       final Map<String, dynamic> json = data.toJson();
 
-      expect(json['brand_uuid'], isNotNull);
-      expect(json['material_uuid'], isNotNull);
-      expect(json['package_uuid'], isNotNull);
-
-      final String? expectedBrandUuid =
-          OpenPrintTagUuidGenerator.buildBrandUuid('TestBrand');
-      final String? expectedMaterialUuid =
-          OpenPrintTagUuidGenerator.buildMaterialUuid(expectedBrandUuid, 'PLA');
-      final String? expectedPackageUuid =
-          OpenPrintTagUuidGenerator.buildPackageUuid(
-            expectedBrandUuid,
-            1234567890123,
-          );
-
-      expect(json['brand_uuid'], equals(expectedBrandUuid));
-      expect(json['material_uuid'], equals(expectedMaterialUuid));
-      expect(json['package_uuid'], equals(expectedPackageUuid));
+      // UUIDs are not generated in toJson(), only in fromJson()
+      expect(json['brand_uuid'], isNull);
+      expect(json['material_uuid'], isNull);
+      expect(json['package_uuid'], isNull);
     });
 
     test('keeps existing UUIDs when present', () {
@@ -75,7 +62,7 @@ void main() {
       expect(data.brandUuid, equals(customBrandUuid));
     });
 
-    test('preserves UUIDs on serialization', () {
+    test('removes UUIDs from JSON when brandName is present', () {
       const String customBrandUuid = '12345678-1234-1234-1234-123456789abc';
       const OpenPrintTagMainData data = OpenPrintTagMainData(
         brandUuid: customBrandUuid,
@@ -85,7 +72,8 @@ void main() {
 
       final Map<String, dynamic> json = data.toJson();
 
-      expect(json['brand_uuid'], equals(customBrandUuid));
+      // UUID is removed because it can be regenerated from brandName
+      expect(json['brand_uuid'], isNull);
     });
 
     test('generates same UUID for same input', () {
@@ -104,7 +92,7 @@ void main() {
       expect(data1.packageUuid, equals(data2.packageUuid));
     });
 
-    test('UUIDs survive round-trip', () {
+    test('UUIDs survive round-trip through fromJson', () {
       const OpenPrintTagMainData data1 = OpenPrintTagMainData(
         brandName: 'TestBrand',
         materialName: 'PLA',
@@ -116,9 +104,18 @@ void main() {
       final OpenPrintTagMainData data2 = OpenPrintTagMainData.fromJson(json);
       final Map<String, dynamic> json2 = data2.toJson();
 
-      expect(json2['brand_uuid'], equals(json['brand_uuid']));
-      expect(json2['material_uuid'], equals(json['material_uuid']));
-      expect(json2['package_uuid'], equals(json['package_uuid']));
+      // Both should be null because UUIDs are removed when names are present
+      expect(json['brand_uuid'], isNull);
+      expect(json['material_uuid'], isNull);
+      expect(json['package_uuid'], isNull);
+      expect(json2['brand_uuid'], isNull);
+      expect(json2['material_uuid'], isNull);
+      expect(json2['package_uuid'], isNull);
+
+      // But the data objects should have UUIDs generated from fromJson
+      expect(data2.brandUuid, isNotNull);
+      expect(data2.materialUuid, isNotNull);
+      expect(data2.packageUuid, isNotNull);
     });
 
     test('generates correct UUIDs for real data', () {
