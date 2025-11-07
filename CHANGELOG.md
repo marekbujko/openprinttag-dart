@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.5
+
+### Changed
+- **Enum field refactoring**: Extracted common logic from `EnumField` and `EnumArrayField` into shared `EnumFieldBase` class to reduce code duplication
+
 ## 0.0.4
 
 ### Fixed

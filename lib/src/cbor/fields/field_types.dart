@@ -144,74 +144,79 @@ class StringField extends Field {
   }
 }
 
-class EnumField extends Field {
+abstract class EnumFieldBase extends Field {
   final Map<int, String> itemsByKey;
   final Map<String, int> itemsByName;
 
-  EnumField({
+  EnumFieldBase({
     required super.key,
     required super.name,
+    required super.type,
     required this.itemsByKey,
     super.required,
   }) : itemsByName = <String, int>{
          for (MapEntry<int, String> e in itemsByKey.entries) e.value: e.key,
-       },
-       super(type: FieldType.enumeration);
+       };
 
-  @override
-  String decode(CborValue data) {
-    final int key = (data as CborSmallInt).value;
+  String keyToValue(int key) {
     return itemsByKey[key] ??
         (throw ArgumentError('Unknown enum key $key for field $name'));
   }
 
-  @override
-  CborValue encode(dynamic data) {
-    final String value = data as String;
+  int valueToKey(String value) {
     final int? enumKey = itemsByName[value];
     if (enumKey == null) {
       throw ArgumentError('Unknown enum value "$value" for field $name');
     }
+    return enumKey;
+  }
+}
+
+class EnumField extends EnumFieldBase {
+  EnumField({
+    required super.key,
+    required super.name,
+    required super.itemsByKey,
+    super.required,
+  }) : super(type: FieldType.enumeration);
+
+  @override
+  String decode(CborValue data) {
+    final int key = (data as CborSmallInt).value;
+    return keyToValue(key);
+  }
+
+  @override
+  CborValue encode(dynamic data) {
+    final int enumKey = valueToKey(data as String);
     return CborSmallInt(enumKey);
   }
 }
 
-class EnumArrayField extends Field {
-  final Map<int, String> itemsByKey;
-  final Map<String, int> itemsByName;
-
+class EnumArrayField extends EnumFieldBase {
   EnumArrayField({
     required super.key,
     required super.name,
-    required this.itemsByKey,
+    required super.itemsByKey,
     super.required,
-  }) : itemsByName = <String, int>{
-         for (MapEntry<int, String> e in itemsByKey.entries) e.value: e.key,
-       },
-       super(type: FieldType.enumArray);
+  }) : super(type: FieldType.enumArray);
 
   @override
   List<String> decode(CborValue data) {
     final CborList list = data as CborList;
     return list.map((CborValue item) {
       final int key = (item as CborSmallInt).value;
-      return itemsByKey[key] ??
-          (throw ArgumentError('Unknown enum key $key for field $name'));
+      return keyToValue(key);
     }).toList();
   }
 
   @override
   CborValue encode(dynamic data) {
-    final List<int> values = (data as List<dynamic>).map((dynamic item) {
-      final String value = item as String;
-      final int? enumKey = itemsByName[value];
-      if (enumKey == null) {
-        throw ArgumentError('Unknown enum value "$value" for field $name');
-      }
-      return enumKey;
+    final List<int> keys = (data as List<dynamic>).map((dynamic item) {
+      return valueToKey(item as String);
     }).toList();
 
-    return CborList(values.map((int v) => CborSmallInt(v)).toList());
+    return CborList(keys.map((int k) => CborSmallInt(k)).toList());
   }
 }
 
