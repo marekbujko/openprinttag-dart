@@ -4,3 +4,6 @@
 *.swo
 *~
 
+# Submodule with YAML sources (only .data.g.dart files are needed)
+data-submodule/
+
