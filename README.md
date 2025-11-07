@@ -35,17 +35,6 @@ final decoded = await parser.decode(payload);
 print('Material: ${decoded.main?.materialName}');
 ```
 
-### Update just auxiliary data
-
-Useful for tracking material consumption without rewriting the whole tag:
-
-```dart
-final updatedPayload = await parser.updateAux(
-  existingPayload,
-  OpenPrintTagAuxData(consumedWeight: 150.5),
-);
-```
-
 ### Working with NDEF
 
 The library handles OpenPrintTag CBOR encoding. You'll need an NDEF library to actually read/write NFC tags.

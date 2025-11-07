@@ -32,56 +32,6 @@ void main() {
     });
   });
 
-  group('Update AUX section only', () {
-    test('01_data.bin: update consumed_weight in AUX', () async {
-      final File file = File('test/fixtures/01_data.bin');
-      final Uint8List bytes = await file.readAsBytes();
-
-      final Uint8List? ndefBytes = _extractNdefTlv(bytes);
-      expect(ndefBytes, isNotNull);
-
-      final List<ndef.NDEFRecord> records = ndef.decodeRawNdefMessage(
-        ndefBytes!,
-      );
-      final Uint8List? openPrintTagPayload = _findOpenPrintTagPayload(records);
-      expect(openPrintTagPayload, isNotNull);
-
-      final OpenPrintTagData originalData = await parser.decode(
-        openPrintTagPayload!,
-      );
-
-      print('\n📊 BEFORE AUX update:');
-      print(
-        '   consumed_weight: ${originalData.aux?.consumedWeight ?? "null"}',
-      );
-      print('   workgroup: ${originalData.aux?.workgroup ?? "null"}');
-      print('   Payload size: ${openPrintTagPayload.length} bytes');
-
-      const OpenPrintTagAuxData updatedAux = OpenPrintTagAuxData(
-        consumedWeight: 10.0,
-      );
-
-      final Uint8List updatedPayload = await parser.updateAux(
-        openPrintTagPayload,
-        updatedAux,
-      );
-
-      final OpenPrintTagData updatedData = await parser.decode(updatedPayload);
-
-      print('\n📊 AFTER AUX update:');
-      print('   consumed_weight: ${updatedData.aux?.consumedWeight}');
-      print('   workgroup: ${updatedData.aux?.workgroup ?? "null"}');
-      print('   Payload size: ${updatedPayload.length} bytes');
-
-      expect(updatedData.aux?.consumedWeight, 10.0);
-      expect(updatedPayload.length, openPrintTagPayload.length);
-      expect(updatedData.main?.materialClass, originalData.main?.materialClass);
-      expect(updatedData.main?.materialType, originalData.main?.materialType);
-
-      print('✅ AUX section successfully updated\n');
-    });
-  });
-
   group('Round-trip encode/decode with modifications', () {
     test(
       '01_data.bin: modify value and verify unknown fields preserved',

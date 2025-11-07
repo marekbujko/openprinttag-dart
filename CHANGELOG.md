@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.8
+
+### Changed
+- **AUX section encoding**: Changed back to indefinite CBOR container for better flexibility
+
+### Added
+- **`encodeAuxSection` method**: New public method in `OpenPrintTagParser` for encoding AUX data directly to bytes
+
+### Removed
+- **BREAKING**: Removed `updateAux` method from `OpenPrintTagParser` - use `encodeAuxSection` instead for lower-level AUX encoding
+- **Internal**: Removed `OpenPrintTagUpdate` class and `lib/src/cbor/update.dart`
+
 ## 0.0.7
 
 ### Added

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:open_print_tag/open_print_tag.dart';
-import 'package:open_print_tag/src/cbor/update.dart';
 import 'package:open_print_tag/src/data/aux_fields.data.g.dart' as aux_data;
 import 'package:open_print_tag/src/data/main_fields.data.g.dart' as main_data;
 import 'package:open_print_tag/src/data/material_class_enum.data.g.dart'
@@ -16,15 +15,12 @@ import 'package:open_print_tag/src/data/write_protection_enum.data.g.dart'
 class OpenPrintTagParser {
   final OpenPrintTagDecoder _decoder;
   final OpenPrintTagEncoder _encoder;
-  final OpenPrintTagUpdate _update;
 
   OpenPrintTagParser._({
     required OpenPrintTagDecoder decoder,
     required OpenPrintTagEncoder encoder,
-    required OpenPrintTagUpdate update,
   }) : _decoder = decoder,
-       _encoder = encoder,
-       _update = update;
+       _encoder = encoder;
 
   /// Creates a parser using generated data constants
   static OpenPrintTagParser create() {
@@ -74,11 +70,7 @@ class OpenPrintTagParser {
       auxFields: auxFields,
     );
 
-    return OpenPrintTagParser._(
-      decoder: decoder,
-      encoder: encoder,
-      update: OpenPrintTagUpdate(decoder: decoder, encoder: encoder),
-    );
+    return OpenPrintTagParser._(decoder: decoder, encoder: encoder);
   }
 
   Future<OpenPrintTagData> decode(Uint8List payload) async {
@@ -89,7 +81,7 @@ class OpenPrintTagParser {
     return _encoder.encodePayload(data, size: size);
   }
 
-  Future<Uint8List> updateAux(Uint8List payload, OpenPrintTagAuxData auxData) {
-    return _update.updateAuxPayload(payload, auxData);
+  Uint8List encodeAuxSection(OpenPrintTagAuxData auxData) {
+    return _encoder.encodeAuxSection(auxData);
   }
 }

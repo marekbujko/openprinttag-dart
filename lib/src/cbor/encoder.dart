@@ -72,30 +72,8 @@ class OpenPrintTagEncoder {
     );
   }
 
-  Uint8List updateAux(
-    Uint8List payload,
-    OpenPrintTagAuxData auxData,
-    int auxOffset,
-  ) {
-    final int auxSize = payload.length - auxOffset;
-
-    final Uint8List auxBytes = _encodeSection(
-      auxData.toJson(),
-      auxFields,
-      indefinite: false,
-    );
-
-    if (auxBytes.length > auxSize) {
-      throw ArgumentError(
-        'AUX section (${auxBytes.length} bytes) exceeds allocated size ($auxSize bytes)',
-      );
-    }
-
-    final Uint8List result = Uint8List(payload.length);
-    result.setRange(0, auxOffset, payload);
-    result.setRange(auxOffset, auxOffset + auxBytes.length, auxBytes);
-
-    return result;
+  Uint8List encodeAuxSection(OpenPrintTagAuxData auxData) {
+    return _encodeSection(auxData.toJson(), auxFields, indefinite: false);
   }
 
   Uint8List _encodeSection(
