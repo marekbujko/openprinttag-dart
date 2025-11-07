@@ -3,7 +3,7 @@ targets:
     sources:
       - $package$
       - lib/**
-      - data/**
+      - data-submodule/data/**
     builders:
       open_print_tag|yaml_data_builder:
         enabled: true
@@ -13,7 +13,7 @@ builders:
     import: "tool/builders/yaml_data_builder.dart"
     builder_factories: ["yamlDataBuilder"]
     build_extensions:
-      ^data/{{}}.yaml: ["lib/src/data/{{}}.data.g.dart"]
-      ^data/{{}}.yml:  ["lib/src/data/{{}}.data.g.dart"]
+      ^data-submodule/data/{{}}.yaml: ["lib/src/data/{{}}.data.g.dart"]
+      ^data-submodule/data/{{}}.yml:  ["lib/src/data/{{}}.data.g.dart"]
     auto_apply: none
     build_to: source

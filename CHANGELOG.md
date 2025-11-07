@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.6
+
+### Changed
+- **Data files**: Replaced local YAML files with Git submodule from upstream OpenPrintTag repository for automatic updates
+
 ## 0.0.5
 
 ### Changed

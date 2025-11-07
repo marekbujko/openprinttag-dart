@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/tags_enum.yaml
+// Source: data-submodule/data/tags_enum.yaml
 
 const List<Map<String, Object?>> tagsEnum = const [
   {'key': 0, 'name': 'filtration_recommended'},
@@ -11,12 +11,18 @@ const List<Map<String, Object?>> tagsEnum = const [
   {'key': 3, 'name': 'air_filtering'},
   {'key': 4, 'name': 'abrasive'},
   {'key': 5, 'name': 'foaming'},
+  {'key': 67, 'name': 'castable'},
   {'key': 6, 'name': 'self_extinguishing'},
   {'key': 7, 'name': 'paramagnetic'},
   {'key': 8, 'name': 'radiation_shielding'},
   {'key': 9, 'name': 'high_temperature'},
   {'key': 10, 'name': 'esd_safe'},
   {'key': 11, 'name': 'conductive'},
+  {
+    'key': 70,
+    'name': 'emi_shielding',
+    'implies': ['conductive'],
+  },
   {'key': 12, 'name': 'blend'},
   {'key': 13, 'name': 'water_soluble'},
   {'key': 14, 'name': 'ipa_soluble'},
@@ -24,12 +30,17 @@ const List<Map<String, Object?>> tagsEnum = const [
   {'key': 64, 'name': 'low_outgassing'},
   {'key': 16, 'name': 'matte'},
   {'key': 17, 'name': 'silk'},
-  {'key': 18, 'name': 'glossy'},
+  {'key': 18, 'deprecated': true},
   {'key': 19, 'name': 'translucent'},
   {
     'key': 20,
     'name': 'transparent',
     'implies': ['translucent'],
+  },
+  {
+    'key': 65,
+    'name': 'without_pigments',
+    'hints': ['translucent'],
   },
   {'key': 21, 'name': 'iridescent'},
   {
@@ -62,11 +73,16 @@ const List<Map<String, Object?>> tagsEnum = const [
     'implies': ['contains_glass'],
   },
   {'key': 35, 'name': 'contains_kevlar'},
-  {'key': 36, 'name': 'contains_stone'},
+  {'key': 68, 'name': 'contains_ptfe'},
+  {
+    'key': 36,
+    'name': 'contains_stone',
+    'hints': ['abrasive'],
+  },
   {
     'key': 37,
     'name': 'contains_magnetite',
-    'implies': ['contains_magnetite'],
+    'hints': ['abrasive'],
   },
   {'key': 38, 'name': 'contains_organic_material'},
   {
@@ -85,6 +101,11 @@ const List<Map<String, Object?>> tagsEnum = const [
     'implies': ['contains_organic_material'],
   },
   {
+    'key': 66,
+    'name': 'contains_algae',
+    'implies': ['contains_organic_material'],
+  },
+  {
     'key': 42,
     'name': 'contains_bamboo',
     'implies': ['contains_wood'],
@@ -94,14 +115,22 @@ const List<Map<String, Object?>> tagsEnum = const [
     'name': 'contains_pine',
     'implies': ['contains_wood'],
   },
-  {'key': 44, 'name': 'contains_ceramic'},
+  {
+    'key': 44,
+    'name': 'contains_ceramic',
+    'hints': ['abrasive'],
+  },
   {
     'key': 45,
     'name': 'contains_boron_carbide',
     'implies': ['contains_ceramic'],
     'hints': ['radiation_shielding'],
   },
-  {'key': 46, 'name': 'contains_metal'},
+  {
+    'key': 46,
+    'name': 'contains_metal',
+    'hints': ['abrasive'],
+  },
   {
     'key': 47,
     'name': 'contains_bronze',
@@ -150,4 +179,5 @@ const List<Map<String, Object?>> tagsEnum = const [
   {'key': 58, 'name': 'imitates_stone'},
   {'key': 59, 'name': 'lithophane'},
   {'key': 60, 'name': 'recycled'},
+  {'key': 69, 'name': 'limited_edition'},
 ];

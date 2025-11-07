@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/write_protection_enum.yaml
+// Source: data-submodule/data/write_protection_enum.yaml
 
 const List<Map<String, Object?>> writeProtectionEnum = const [
   {'key': 0, 'name': 'no'},

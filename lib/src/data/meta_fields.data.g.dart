@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/meta_fields.yaml
+// Source: data-submodule/data/meta_fields.yaml
 
 const List<Map<String, Object?>> metaFields = const [
   {'key': 0, 'name': 'main_region_offset', 'type': 'int', 'unit': 'bytes'},

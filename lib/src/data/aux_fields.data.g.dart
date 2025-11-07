@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/aux_fields.yaml
+// Source: data-submodule/data/aux_fields.yaml
 
 const List<Map<String, Object?>> auxFields = const [
   {'key': 0, 'name': 'consumed_weight', 'type': 'number', 'unit': 'g'},

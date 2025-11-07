@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/main_fields.yaml
+// Source: data-submodule/data/main_fields.yaml
 
 const List<Map<String, Object?>> mainFields = const [
   {'key': 0, 'name': 'instance_uuid', 'type': 'uuid'},
@@ -184,8 +184,8 @@ const List<Map<String, Object?>> mainFields = const [
     'key': 29,
     'name': 'density',
     'type': 'number',
-    'unit': 'mg/cm³',
-    'example': 1240,
+    'unit': 'g/cm³ (1 g/cm³ = 0.001 g/mm³ = 1000 kg/m³)',
+    'example': 1.24,
     'required': 'recommended',
   },
   {

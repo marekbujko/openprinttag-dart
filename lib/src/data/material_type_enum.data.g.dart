@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Source: data/material_type_enum.yaml
+// Source: data-submodule/data/material_type_enum.yaml
 
 const List<Map<String, Object?>> materialTypeEnum = const [
   {
@@ -199,6 +199,12 @@ const List<Map<String, Object?>> materialTypeEnum = const [
     'key': 38,
     'abbreviation': 'TPI',
     'name': 'Thermoplastic Polyimide',
+    'category': 'FFF',
+  },
+  {
+    'key': 39,
+    'abbreviation': 'SBS',
+    'name': 'Styrene-Butadiene-Styrene',
     'category': 'FFF',
   },
 ];
