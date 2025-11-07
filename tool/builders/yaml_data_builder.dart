@@ -10,8 +10,12 @@ Builder yamlDataBuilder([BuilderOptions? _]) => _YamlDataBuilder();
 class _YamlDataBuilder implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => const <String, List<String>>{
-    r'^data-submodule/data/{{}}.yaml': <String>[r'lib/src/data/{{}}.data.g.dart'],
-    r'^data-submodule/data/{{}}.yml': <String>[r'lib/src/data/{{}}.data.g.dart'],
+    r'^data-submodule/data/{{}}.yaml': <String>[
+      r'lib/src/data/{{}}.data.g.dart',
+    ],
+    r'^data-submodule/data/{{}}.yml': <String>[
+      r'lib/src/data/{{}}.data.g.dart',
+    ],
   };
 
   @override
