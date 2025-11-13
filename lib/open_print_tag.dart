@@ -11,6 +11,8 @@ export 'src/cbor/encoder.dart';
 export 'src/cbor/fields/field_types.dart';
 export 'src/cbor/fields/fields_manager.dart';
 export 'src/cbor/fields/ndef_region.dart';
+// Export enums
+export 'src/enums/enums.dart';
 // Export main parser (high-level API)
 export 'src/open_print_tag_parser.dart';
 // Export UUID generator utility

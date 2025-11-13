@@ -13,7 +13,10 @@ void main() {
   group('Meta section', () {
     test('is always at the beginning of payload', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(data, size: 320);
@@ -24,7 +27,10 @@ void main() {
 
     test('main region follows meta when offset not specified', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(data, size: 320);
@@ -36,7 +42,10 @@ void main() {
 
     test('aux region is indicated by aux_region_offset', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
         aux: OpenPrintTagAuxData(consumedWeight: 10.0),
       );
 
@@ -49,7 +58,10 @@ void main() {
 
     test('creates fixed size regions with totalSize', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(data, size: 320);
@@ -62,8 +74,8 @@ void main() {
     test('preserves region sizes during update', () async {
       const OpenPrintTagData initialData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 200,
         ),
       );
@@ -75,8 +87,8 @@ void main() {
 
       const OpenPrintTagData updatedData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 220,
         ),
       );
@@ -91,7 +103,10 @@ void main() {
 
     test('throws when main section exceeds region size', () async {
       const OpenPrintTagData initialData = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(initialData, size: 100);
@@ -100,8 +115,8 @@ void main() {
       final OpenPrintTagData tooLarge = OpenPrintTagData(
         meta: decoded.meta,
         main: const OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Very long material name that will not fit',
           brandName: 'Very long brand name that will not fit either',
         ),
@@ -112,7 +127,10 @@ void main() {
 
     test('throws when aux section exceeds region size', () async {
       const OpenPrintTagData initialData = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
         aux: OpenPrintTagAuxData(consumedWeight: 10.0),
       );
 
@@ -136,8 +154,8 @@ void main() {
     test('round-trip preserves meta structure', () async {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Test',
         ),
         aux: OpenPrintTagAuxData(consumedWeight: 50.0),
@@ -156,8 +174,8 @@ void main() {
     test('allows smaller data in fixed size region', () async {
       const OpenPrintTagData largeData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Long material name',
           brandName: 'Long brand name',
         ),
@@ -169,8 +187,8 @@ void main() {
       final OpenPrintTagData smallerData = OpenPrintTagData(
         meta: decoded.meta,
         main: const OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
         ),
       );
 
@@ -179,15 +197,18 @@ void main() {
         updatedPayload,
       );
 
-      expect(decodedUpdated.main!.materialClass, 'FFF');
-      expect(decodedUpdated.main!.materialType, 'PLA');
+      expect(decodedUpdated.main!.materialClass, MaterialClassEnum.FFF);
+      expect(decodedUpdated.main!.materialType, MaterialTypeEnum.PLA);
       expect(decodedUpdated.main!.materialName, isNull);
       expect(decodedUpdated.main!.brandName, isNull);
     });
 
     test('calculates region sizes when not specified', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
         aux: OpenPrintTagAuxData(consumedWeight: 10.0),
       );
 

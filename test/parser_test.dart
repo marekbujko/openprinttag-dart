@@ -40,7 +40,10 @@ void main() {
 
     test('encodes and decodes basic payload', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(data, size: 320);
@@ -48,8 +51,8 @@ void main() {
 
       expect(result.meta, isNotNull);
       expect(result.main, isNotNull);
-      expect(result.main!.materialClass, 'FFF');
-      expect(result.main!.materialType, 'PLA');
+      expect(result.main!.materialClass, MaterialClassEnum.FFF);
+      expect(result.main!.materialType, MaterialTypeEnum.PLA);
     });
   });
 
@@ -57,9 +60,9 @@ void main() {
     test('encodes basic main data', () {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
+          materialClass: MaterialClassEnum.FFF,
           materialName: 'PLA Premium',
-          materialType: 'PLA',
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 215,
           minBedTemperature: 60,
         ),
@@ -74,9 +77,9 @@ void main() {
     test('encodes data with meta and aux regions', () {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
+          materialClass: MaterialClassEnum.FFF,
           materialName: 'PETG Premium',
-          materialType: 'PETG',
+          materialType: MaterialTypeEnum.PETG,
           minPrintTemperature: 230,
           minBedTemperature: 85,
         ),
@@ -98,9 +101,9 @@ void main() {
     test('preserves data during round-trip', () async {
       const OpenPrintTagData originalData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
+          materialClass: MaterialClassEnum.FFF,
           materialName: 'ABS Premium',
-          materialType: 'ABS',
+          materialType: MaterialTypeEnum.ABS,
           minPrintTemperature: 240,
           minBedTemperature: 100,
           density: 1.04,
@@ -130,9 +133,9 @@ void main() {
       const OpenPrintTagData originalData = OpenPrintTagData(
         meta: OpenPrintTagMetaData(),
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
+          materialClass: MaterialClassEnum.FFF,
           materialName: 'TPU Flexible',
-          materialType: 'TPU',
+          materialType: MaterialTypeEnum.TPU,
           minPrintTemperature: 220,
           minBedTemperature: 50,
         ),
@@ -156,7 +159,7 @@ void main() {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
           materialName: 'PLA Premium',
-          materialType: 'PLA',
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 215,
           minBedTemperature: 60,
         ),
@@ -179,8 +182,8 @@ void main() {
     test('creates minimal META without aux', () async {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Test Material',
         ),
       );
@@ -194,7 +197,10 @@ void main() {
 
     test('creates META with aux region', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
         aux: OpenPrintTagAuxData(workgroup: 'TestGrp', consumedWeight: 100.5),
       );
 
@@ -209,8 +215,8 @@ void main() {
     test('validates meta structure', () async {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Test Material',
         ),
       );
@@ -227,8 +233,8 @@ void main() {
     test('creates tag with fixed size and padding', () async {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Test Material',
         ),
       );
@@ -239,15 +245,15 @@ void main() {
 
       final OpenPrintTagData decoded = await parser.decode(payload);
       expect(decoded.main, isNotNull);
-      expect(decoded.main!.materialClass, 'FFF');
+      expect(decoded.main!.materialClass, MaterialClassEnum.FFF);
       expect(decoded.meta, isNotNull);
     });
 
     test('throws when data exceeds totalSize', () {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Very long material name that takes up lots of space',
         ),
       );
@@ -260,8 +266,8 @@ void main() {
     test('preserves META sizes when updating', () async {
       const OpenPrintTagData initialData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 200,
         ),
       );
@@ -273,8 +279,8 @@ void main() {
 
       const OpenPrintTagData updatedData = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           minPrintTemperature: 220,
         ),
       );
@@ -289,7 +295,10 @@ void main() {
 
     test('throws when updated data exceeds fixed size', () async {
       const OpenPrintTagData initialData = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(initialData, size: 100);
@@ -298,8 +307,8 @@ void main() {
       final OpenPrintTagData tooLarge = OpenPrintTagData(
         meta: decoded.meta,
         main: const OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           materialName: 'Very long name that will not fit',
         ),
       );

@@ -14,8 +14,8 @@ void main() {
   group('Unknown fields preservation', () {
     test('preserves unknown fields in MAIN section', () async {
       final OpenPrintTagMainData mainWithUnknown = OpenPrintTagMainData(
-        materialClass: 'FFF',
-        materialType: 'PLA',
+        materialClass: MaterialClassEnum.FFF,
+        materialType: MaterialTypeEnum.PLA,
         materialName: 'Test Material',
         unknownFields: <int, CborValue>{
           999: const CborSmallInt(42),
@@ -44,14 +44,17 @@ void main() {
         'future_data',
       );
 
-      expect(decoded.main!.materialClass, 'FFF');
-      expect(decoded.main!.materialType, 'PLA');
+      expect(decoded.main!.materialClass, MaterialClassEnum.FFF);
+      expect(decoded.main!.materialType, MaterialTypeEnum.PLA);
       expect(decoded.main!.materialName, 'Test Material');
     });
 
     test('preserves unknown fields in AUX section', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
         aux: OpenPrintTagAuxData(consumedWeight: 50.5, workgroup: 'TestGrp'),
       );
 
@@ -87,7 +90,10 @@ void main() {
 
     test('preserves binary unknown fields exactly', () async {
       const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(materialClass: 'FFF', materialType: 'PLA'),
+        main: OpenPrintTagMainData(
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
+        ),
       );
 
       final Uint8List payload = parser.encode(data, size: 320);

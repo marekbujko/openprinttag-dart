@@ -1,4 +1,5 @@
 import 'package:open_print_tag/models/models.dart';
+import 'package:open_print_tag/src/enums/enums.dart';
 import 'package:open_print_tag/src/uuid_generator.dart';
 import 'package:test/test.dart';
 
@@ -38,7 +39,7 @@ void main() {
         brandName: 'TestBrand',
         materialName: 'PLA',
         gtin: 1234567890123,
-        materialClass: 'FFF',
+        materialClass: MaterialClassEnum.FFF,
       );
 
       final Map<String, dynamic> json = data.toJson();
@@ -67,7 +68,7 @@ void main() {
       const OpenPrintTagMainData data = OpenPrintTagMainData(
         brandUuid: customBrandUuid,
         brandName: 'TestBrand',
-        materialClass: 'FFF',
+        materialClass: MaterialClassEnum.FFF,
       );
 
       final Map<String, dynamic> json = data.toJson();
@@ -97,7 +98,7 @@ void main() {
         brandName: 'TestBrand',
         materialName: 'PLA',
         gtin: 1234567890123,
-        materialClass: 'FFF',
+        materialClass: MaterialClassEnum.FFF,
       );
 
       final Map<String, dynamic> json = data1.toJson();

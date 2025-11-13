@@ -1,5 +1,6 @@
 import 'package:cbor/cbor.dart';
 import 'package:open_print_tag/src/cbor/fields/field_types.dart';
+import 'package:open_print_tag/src/enums/enums.dart';
 
 typedef AssetLoader = Future<String> Function(String assetPath);
 
@@ -8,10 +9,7 @@ class FieldsManager {
   final Map<String, Field> fieldsByName = <String, Field>{};
 
   /// Creates a FieldsManager from generated data constants
-  static FieldsManager fromData(
-    List<Map<String, Object?>> fieldsData, {
-    required Map<String, List<Map<String, Object?>>> enumsData,
-  }) {
+  static FieldsManager fromData(List<Map<String, Object?>> fieldsData) {
     final FieldsManager manager = FieldsManager();
 
     for (final Map<String, Object?> item in fieldsData) {
@@ -19,17 +17,14 @@ class FieldsManager {
         continue;
       }
 
-      final Field field = _createFieldFromData(item, enumsData);
+      final Field field = _createFieldFromData(item);
       manager._addField(field);
     }
 
     return manager;
   }
 
-  static Field _createFieldFromData(
-    Map<String, Object?> config,
-    Map<String, List<Map<String, Object?>>> enumsData,
-  ) {
+  static Field _createFieldFromData(Map<String, Object?> config) {
     final int key = config['key'] as int;
     final String name = config['name'] as String;
     final String type = config['type'] as String;
@@ -54,13 +49,16 @@ class FieldsManager {
 
       FieldType.enumeration => () {
         final String itemsFile = config['items_file'] as String;
-        final String indexField = config['index_field'] as String? ?? 'key';
-        final String nameField = config['name_field'] as String? ?? 'name';
-        final Map<int, String> itemsByKey = _extractEnumItems(
-          enumsData[itemsFile]!,
-          indexField,
-          nameField,
-        );
+
+        // Get enum data directly from enum classes
+        final Map<int, String>? itemsByKey = _getEnumItemsFromClass(itemsFile);
+
+        if (itemsByKey == null) {
+          throw ArgumentError(
+            'Unknown enum file: $itemsFile. Add it to _getEnumItemsFromClass.',
+          );
+        }
+
         return EnumField(
           key: key,
           name: name,
@@ -71,13 +69,16 @@ class FieldsManager {
 
       FieldType.enumArray => () {
         final String itemsFile = config['items_file'] as String;
-        final String indexField = config['index_field'] as String? ?? 'key';
-        final String nameField = config['name_field'] as String? ?? 'name';
-        final Map<int, String> itemsByKey = _extractEnumItems(
-          enumsData[itemsFile]!,
-          indexField,
-          nameField,
-        );
+
+        // Get enum data directly from enum classes
+        final Map<int, String>? itemsByKey = _getEnumItemsFromClass(itemsFile);
+
+        if (itemsByKey == null) {
+          throw ArgumentError(
+            'Unknown enum file: $itemsFile. Add it to _getEnumItemsFromClass.',
+          );
+        }
+
         return EnumArrayField(
           key: key,
           name: name,
@@ -97,29 +98,31 @@ class FieldsManager {
     };
   }
 
-  static Map<int, String> _extractEnumItems(
-    List<Map<String, Object?>> enumData,
-    String indexField,
-    String nameField,
-  ) {
-    final Map<int, String> items = <int, String>{};
-
-    for (final Map<String, Object?> item in enumData) {
-      if (item['deprecated'] == true) {
-        continue;
-      }
-
-      final int key = item[indexField] as int;
-      final String name = item[nameField] as String;
-
-      if (items.containsKey(key)) {
-        throw ArgumentError('Duplicate key $key in enum data');
-      }
-
-      items[key] = name;
+  static Map<int, String>? _getEnumItemsFromClass(String itemsFile) {
+    switch (itemsFile) {
+      case 'material_class_enum.yaml':
+        return <int, String>{
+          for (final MaterialClassEnum value in MaterialClassEnum.values)
+            value.key: (value as Enum).name, // 'FFF', 'SLA'
+        };
+      case 'material_type_enum.yaml':
+        return <int, String>{
+          for (final MaterialTypeEnum value in MaterialTypeEnum.values)
+            value.key: (value as Enum).name, // 'PLA', 'PETG', etc.
+        };
+      case 'tags_enum.yaml':
+        return <int, String>{
+          for (final TagsEnum value in TagsEnum.values)
+            value.key: (value as Enum).name, // 'filtration_recommended', etc.
+        };
+      case 'write_protection_enum.yaml':
+        return <int, String>{
+          for (final WriteProtectionEnum value in WriteProtectionEnum.values)
+            value.key: (value as Enum).name, // 'no', 'irreversible', etc.
+        };
+      default:
+        return null;
     }
-
-    return items;
   }
 
   static bool _parseRequired(dynamic value) {

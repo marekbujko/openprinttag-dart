@@ -205,8 +205,8 @@ Future<void> _testRoundTripWithModification(
   final OpenPrintTagMetaData? originalMeta = originalData.meta;
 
   final OpenPrintTagMainData? modifiedMain = originalData.main?.copyWith(
-    materialClass: originalData.main?.materialClass ?? 'FFF',
-    materialType: originalData.main?.materialType ?? 'PLA',
+    materialClass: originalData.main?.materialClass ?? MaterialClassEnum.FFF,
+    materialType: originalData.main?.materialType ?? MaterialTypeEnum.PLA,
     minPrintTemperature: (originalData.main?.minPrintTemperature ?? 200) + 10,
   );
 
