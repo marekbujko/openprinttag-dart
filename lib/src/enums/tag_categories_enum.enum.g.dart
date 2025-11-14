@@ -1,6 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // Source: data-submodule/data/tag_categories_enum.yaml
-
 enum TagCategoriesEnum {
   biological(name: 'Biological', emoji: '🧬'),
   physical(name: 'Physical', emoji: '⚙️'),

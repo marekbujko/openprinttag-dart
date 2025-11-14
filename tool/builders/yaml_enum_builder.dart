@@ -1,7 +1,10 @@
+// ignore_for_file: always_use_package_imports
+
 import 'package:build/build.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:yaml/yaml.dart';
+
+import 'src/enum_field_models.dart';
+import 'src/yaml_builder_utils.dart';
 
 const Set<String> _enumBasenames = <String>{
   'tags_enum',
@@ -11,6 +14,9 @@ const Set<String> _enumBasenames = <String>{
   'material_class_enum',
 };
 
+const Set<String> _enumExcludedKeys = <String>{'description'};
+
+/// Generates enhanced Dart enums from YAML with type inference and cross-enum refs.
 Builder yamlEnumBuilder([BuilderOptions? _]) => _YamlEnumBuilder();
 
 class _YamlEnumBuilder implements Builder {
@@ -56,7 +62,10 @@ class _YamlEnumBuilder implements Builder {
     }
 
     final List<Map<String, Object?>> items = raw
-        .map((dynamic e) => _flattenYaml(e))
+        .map(
+          (dynamic e) =>
+              YamlBuilderUtils.flattenYaml(e, excludedKeys: _enumExcludedKeys),
+        )
         .whereType<Map<String, Object?>>()
         .toList();
 
@@ -66,7 +75,10 @@ class _YamlEnumBuilder implements Builder {
     );
 
     final String source = _generateEnumSource(inputId.path, basename, items);
-    await buildStep.writeAsString(outputId, _formatSource(source));
+    await buildStep.writeAsString(
+      outputId,
+      YamlBuilderUtils.formatSource(source),
+    );
   }
 
   String _generateEnumSource(
@@ -74,23 +86,19 @@ class _YamlEnumBuilder implements Builder {
     String basename,
     List<Map<String, Object?>> items,
   ) {
-    final DartEmitter emitter = DartEmitter.scoped(
-      orderDirectives: true,
-      useNullSafetySyntax: true,
+    final String enumName = YamlBuilderUtils.toUpperCamelCase(
+      basename,
+      fallback: 'DataEnum',
     );
 
-    final String enumName = _toTypeName(basename);
-
-    // Collect necessary imports
+    // Collect necessary imports for enum references
     final Set<String> imports = <String>{};
 
     if (items.isEmpty) {
-      final StringBuffer emptyOut = StringBuffer();
-      emptyOut.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-      emptyOut.writeln('// Source: $sourcePath');
-      emptyOut.writeln('');
-      emptyOut.writeln('enum $enumName { }');
-      return emptyOut.toString();
+      return <String>[
+        YamlBuilderUtils.generateHeader(sourcePath),
+        'enum $enumName { }',
+      ].join('\n');
     }
 
     final StringBuffer out = StringBuffer();
@@ -105,12 +113,12 @@ class _YamlEnumBuilder implements Builder {
     yamlKeys.remove('deprecated');
 
     // Collect field infos
-    final List<_FieldInfo> fields = <_FieldInfo>[];
+    final List<FieldInfo> fields = <FieldInfo>[];
 
     final bool hasKey = yamlKeys.contains('key');
     if (hasKey) {
       fields.add(
-        _FieldInfo(
+        FieldInfo(
           yamlKey: 'key',
           fieldName: 'key',
           type: 'int',
@@ -121,26 +129,25 @@ class _YamlEnumBuilder implements Builder {
       yamlKeys.remove('key');
     }
 
-    // Check if we need 'name' field from YAML 'name' - only if any item's name differs from sanitized identifier
-    bool needsNameField = false;
-    for (final Map<String, Object?> it in items) {
-      final String? nameValue = it['name'] as String?;
-      if (nameValue == null) {
-        continue;
-      }
-
-      final String? abbreviation = it['abbreviation'] as String?;
-      final String valueIdent = abbreviation ?? _sanitizeIdentifier(nameValue);
-
-      if (valueIdent != nameValue) {
-        needsNameField = true;
-        break;
-      }
-    }
-
-    if (needsNameField) {
+    // Determine which field to use as 'name':
+    // - If 'display_name' exists, use it (e.g., tag_categories)
+    // - Otherwise, if 'name' exists and differs from abbreviation, use it (e.g., material_type)
+    if (yamlKeys.contains('display_name')) {
       fields.add(
-        _FieldInfo(
+        FieldInfo(
+          yamlKey: 'display_name',
+          fieldName: 'name',
+          type: 'String',
+          isNullable: false,
+          isPositional: false,
+        ),
+      );
+      yamlKeys.remove('display_name');
+      yamlKeys.remove('name'); // Skip 'name' if we have 'display_name'
+    } else if (yamlKeys.contains('name') && yamlKeys.contains('abbreviation')) {
+      // Has both 'name' and 'abbreviation' - use 'name' as field
+      fields.add(
+        FieldInfo(
           yamlKey: 'name',
           fieldName: 'name',
           type: 'String',
@@ -148,8 +155,13 @@ class _YamlEnumBuilder implements Builder {
           isPositional: false,
         ),
       );
+      yamlKeys.remove('name');
+    } else {
+      // Only has 'name' (used as identifier) - don't create field
+      yamlKeys.remove('name');
     }
-    yamlKeys.remove('name');
+
+    yamlKeys.remove('abbreviation'); // Always remove - it's the enum identifier
 
     // Infer other fields, use nullable if missing in any item
     for (final String key in yamlKeys) {
@@ -167,12 +179,7 @@ class _YamlEnumBuilder implements Builder {
           sample = it[key];
         }
       }
-      String fieldName = _mapYamlKeyToFieldName(key);
-
-      // Rename 'display_name' to 'name' for better API
-      if (key == 'display_name') {
-        fieldName = 'name';
-      }
+      final String fieldName = _mapYamlKeyToFieldName(key);
 
       // Special handling for enum references
       String typeStr;
@@ -185,7 +192,7 @@ class _YamlEnumBuilder implements Builder {
         isEnumRef = true;
       } else {
         // Check if field should reference another enum
-        final _EnumFieldConfig? enumRef = _getEnumReference(basename, key);
+        final EnumFieldConfig? enumRef = _getEnumReference(basename, key);
         if (enumRef != null) {
           typeStr = enumRef.enumType;
           isEnumRef = true;
@@ -197,7 +204,7 @@ class _YamlEnumBuilder implements Builder {
       }
 
       fields.add(
-        _FieldInfo(
+        FieldInfo(
           yamlKey: key,
           fieldName: fieldName,
           type: hasNullOrMissing ? '$typeStr?' : typeStr,
@@ -209,16 +216,12 @@ class _YamlEnumBuilder implements Builder {
       );
     }
 
-    // Write imports at the beginning (after the header comment)
+    // Build final output with header and imports
     final StringBuffer finalOut = StringBuffer();
-    finalOut.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-    finalOut.writeln('// Source: $sourcePath');
-    finalOut.writeln('');
-    for (final String import in imports) {
-      finalOut.writeln("import '$import';");
-    }
-    if (imports.isNotEmpty) {
-      finalOut.writeln('');
+    finalOut.write(YamlBuilderUtils.generateHeader(sourcePath));
+    final String importsCode = YamlBuilderUtils.generateImports(imports);
+    if (importsCode.isNotEmpty) {
+      finalOut.writeln(importsCode);
     }
 
     out.writeln('enum $enumName {');
@@ -237,10 +240,12 @@ class _YamlEnumBuilder implements Builder {
 
       // Use 'abbreviation' as identifier if available, otherwise sanitize 'name'
       final String? abbreviation = it['abbreviation'] as String?;
-      final String valueIdent = abbreviation ?? _sanitizeIdentifier(nameValue);
+      final String valueIdent = YamlBuilderUtils.sanitizeIdentifier(
+        abbreviation ?? nameValue,
+      );
 
       final List<String> namedArgs = <String>[];
-      for (final _FieldInfo f in fields) {
+      for (final FieldInfo f in fields) {
         final dynamic value = it[f.yamlKey];
         String argValue;
 
@@ -258,12 +263,14 @@ class _YamlEnumBuilder implements Builder {
             // Single enum reference (e.g., category: MaterialClassEnum.FFF)
             argValue = '${f.referencedEnumType}.$value';
           } else {
-            final Expression expr = _toLiteral(value);
-            argValue = '${expr.accept(emitter)}';
+            argValue = YamlBuilderUtils.referenceToCode(
+              YamlBuilderUtils.toLiteral(value),
+            );
           }
         } else {
-          final Expression expr = _toLiteral(value);
-          argValue = '${expr.accept(emitter)}';
+          argValue = YamlBuilderUtils.referenceToCode(
+            YamlBuilderUtils.toLiteral(value),
+          );
         }
 
         namedArgs.add('${f.fieldName}: $argValue');
@@ -275,7 +282,7 @@ class _YamlEnumBuilder implements Builder {
     out.writeln('');
 
     // Emit fields
-    for (final _FieldInfo f in fields) {
+    for (final FieldInfo f in fields) {
       out.writeln('  final ${f.type} ${f.fieldName};');
     }
     out.writeln('');
@@ -283,7 +290,7 @@ class _YamlEnumBuilder implements Builder {
     // Emit constructor - all fields as named parameters for enhanced enum
     final String namedParams = fields
         .map(
-          (_FieldInfo f) =>
+          (FieldInfo f) =>
               '${f.isNullable ? '' : 'required '}this.${f.fieldName}',
         )
         .join(', ');
@@ -302,184 +309,36 @@ class _YamlEnumBuilder implements Builder {
     finalOut.write(out.toString());
     return finalOut.toString();
   }
-
-  String _formatSource(String source) {
-    try {
-      return DartFormatter(
-        languageVersion: DartFormatter.latestLanguageVersion,
-      ).format(source);
-    } catch (_) {
-      return source;
-    }
-  }
-}
-
-String _toTypeName(String name) {
-  final List<String> parts = name
-      .split(RegExp(r'[_\-\s]+'))
-      .where((String s) => s.isNotEmpty)
-      .toList();
-  if (parts.isEmpty) {
-    return 'DataEnum';
-  }
-  final String pascal = parts
-      .map((String s) => s[0].toUpperCase() + s.substring(1).toLowerCase())
-      .join();
-  return pascal;
-}
-
-String _toCamel(String name) {
-  final List<String> parts = name
-      .split(RegExp(r'[_\-\s]+'))
-      .where((String s) => s.isNotEmpty)
-      .toList();
-  if (parts.isEmpty) {
-    return 'value';
-  }
-  return parts.first.toLowerCase() +
-      parts
-          .skip(1)
-          .map((String s) => s[0].toUpperCase() + s.substring(1).toLowerCase())
-          .join();
 }
 
 String _mapYamlKeyToFieldName(String yamlKey) {
-  // Avoid conflict with Enum.name getter
   if (yamlKey == 'name') {
-    return 'id';
+    return 'id'; // Avoid conflict with Enum.name getter
   }
-  return _toCamel(yamlKey);
-}
-
-String _sanitizeIdentifier(String name) {
-  // Remove/replace characters that are not valid in Dart identifiers
-  // Replace spaces, hyphens, and special chars with underscores
-  String sanitized = name
-      .replaceAll(RegExp(r'[^\w]+'), '_')
-      .replaceAll(RegExp(r'^_+|_+$'), ''); // trim leading/trailing underscores
-
-  // If starts with a digit, prepend underscore
-  if (sanitized.isNotEmpty && RegExp(r'^\d').hasMatch(sanitized)) {
-    sanitized = '_$sanitized';
-  }
-
-  return sanitized.isEmpty ? 'value' : sanitized;
+  return YamlBuilderUtils.toLowerCamelCase(yamlKey, fallback: 'value');
 }
 
 String _typeStringForValue(dynamic value) {
-  if (value is int) {
-    return 'int';
-  }
-  if (value is double) {
-    return 'double';
-  }
-  if (value is bool) {
-    return 'bool';
-  }
-  if (value is String) {
-    return 'String';
-  }
-  if (value is List) {
-    // Try to infer list element type from first non-null
-    dynamic firstNonNull;
-    for (final dynamic v in value) {
-      if (v != null) {
-        firstNonNull = v;
-        break;
-      }
-    }
-    final String inner = firstNonNull == null
-        ? 'Object?'
-        : _typeStringForValue(firstNonNull);
-    return 'List<$inner>';
-  }
-  if (value is Map) {
-    return 'Map<String, Object?>';
-  }
-  return 'Object?';
+  return YamlBuilderUtils.inferTypeCode(value);
 }
 
-class _FieldInfo {
-  _FieldInfo({
-    required this.yamlKey,
-    required this.fieldName,
-    required this.type,
-    required this.isNullable,
-    required this.isPositional,
-    this.isEnumReference = false,
-    this.referencedEnumType,
-  });
-
-  final String yamlKey;
-  final String fieldName;
-  final String type;
-  final bool isNullable;
-  final bool isPositional;
-  final bool isEnumReference;
-  final String? referencedEnumType;
-}
-
-dynamic _flattenYaml(dynamic node) {
-  if (node is YamlMap) {
-    final List<MapEntry<String, dynamic>> entries =
-        <MapEntry<String, dynamic>>[];
-    for (final MapEntry<dynamic, dynamic> entry in node.entries) {
-      final String key = entry.key.toString();
-      if (key != 'description') {
-        entries.add(MapEntry<String, dynamic>(key, _flattenYaml(entry.value)));
-      }
-    }
-    return Map<String, dynamic>.fromEntries(entries);
-  }
-  if (node is YamlList) {
-    return node.map(_flattenYaml).toList();
-  }
-  return node;
-}
-
-Expression _toLiteral(dynamic value) => switch (value) {
-  null => literalNull,
-  final bool boolValue => literalBool(boolValue),
-  final num numValue => literalNum(numValue),
-  final String stringValue => literalString(stringValue),
-  final List<dynamic> listValue => literalConstList(
-    listValue.map(_toLiteral).toList(),
-  ),
-  final Map<dynamic, dynamic> mapValue =>
-    literalConstMap(<Expression, Expression>{
-      for (final MapEntry<dynamic, dynamic> entry in mapValue.entries)
-        literalString(entry.key.toString()): _toLiteral(entry.value),
-    }),
-  _ => literalNull,
-};
-
-/// Configuration for enum field references
-class _EnumFieldConfig {
-  const _EnumFieldConfig({required this.enumType, required this.importPath});
-
-  final String enumType;
-  final String importPath;
-}
-
-/// Maps enum basename and field name to their enum reference configuration
-/// This centralizes all enum field reference logic in one place
-const Map<String, Map<String, _EnumFieldConfig>> _enumFieldReferences =
-    <String, Map<String, _EnumFieldConfig>>{
-      'material_type_enum': <String, _EnumFieldConfig>{
-        'category': _EnumFieldConfig(
+/// Cross-enum reference configuration. Add new enum refs here.
+const Map<String, Map<String, EnumFieldConfig>> _enumFieldReferences =
+    <String, Map<String, EnumFieldConfig>>{
+      'material_type_enum': <String, EnumFieldConfig>{
+        'category': EnumFieldConfig(
           enumType: 'MaterialClassEnum',
           importPath: 'material_class_enum.enum.g.dart',
         ),
       },
-      'tags_enum': <String, _EnumFieldConfig>{
-        'category': _EnumFieldConfig(
+      'tags_enum': <String, EnumFieldConfig>{
+        'category': EnumFieldConfig(
           enumType: 'TagCategoriesEnum',
           importPath: 'tag_categories_enum.enum.g.dart',
         ),
       },
     };
 
-/// Returns enum reference configuration for a specific field in a specific enum
-_EnumFieldConfig? _getEnumReference(String basename, String fieldKey) {
+EnumFieldConfig? _getEnumReference(String basename, String fieldKey) {
   return _enumFieldReferences[basename]?[fieldKey];
 }
