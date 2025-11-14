@@ -2,13 +2,6 @@ import 'package:cbor/cbor.dart';
 import 'package:open_print_tag/open_print_tag.dart';
 import 'package:open_print_tag/src/data/aux_fields.data.g.dart' as aux_data;
 import 'package:open_print_tag/src/data/main_fields.data.g.dart' as main_data;
-import 'package:open_print_tag/src/data/material_class_enum.data.g.dart'
-    as material_class_data;
-import 'package:open_print_tag/src/data/material_type_enum.data.g.dart'
-    as material_type_data;
-import 'package:open_print_tag/src/data/tags_enum.data.g.dart' as tags_data;
-import 'package:open_print_tag/src/data/write_protection_enum.data.g.dart'
-    as write_protection_data;
 import 'package:test/test.dart';
 
 void main() {
@@ -16,23 +9,8 @@ void main() {
   late FieldsManager auxFields;
 
   setUpAll(() {
-    final Map<String, List<Map<String, Object?>>> enumsData =
-        <String, List<Map<String, Object?>>>{
-          'material_class_enum.yaml': material_class_data.materialClassEnum,
-          'material_type_enum.yaml': material_type_data.materialTypeEnum,
-          'tags_enum.yaml': tags_data.tagsEnum,
-          'write_protection_enum.yaml':
-              write_protection_data.writeProtectionEnum,
-        };
-
-    mainFields = FieldsManager.fromData(
-      main_data.mainFields,
-      enumsData: enumsData,
-    );
-    auxFields = FieldsManager.fromData(
-      aux_data.auxFields,
-      enumsData: enumsData,
-    );
+    mainFields = FieldsManager.fromData(main_data.mainFields);
+    auxFields = FieldsManager.fromData(aux_data.auxFields);
   });
 
   group('FieldsManager unknown fields', () {

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cbor/cbor.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:open_print_tag/src/enums/enums.dart';
 import 'package:open_print_tag/src/uuid_generator.dart';
 
 part 'open_print_tag_main_data.g.dart';
@@ -36,10 +37,10 @@ class OpenPrintTagMainData {
 
   // Material properties
   @JsonKey(name: 'material_class')
-  final String? materialClass;
+  final MaterialClassEnum? materialClass;
 
   @JsonKey(name: 'material_type')
-  final String? materialType;
+  final MaterialTypeEnum? materialType;
 
   @JsonKey(name: 'material_name')
   final String? materialName;
@@ -51,7 +52,7 @@ class OpenPrintTagMainData {
   final String? brandName;
 
   @JsonKey(name: 'write_protection')
-  final String? writeProtection;
+  final WriteProtectionEnum? writeProtection;
 
   // Timestamps
   @JsonKey(name: 'manufactured_date')
@@ -126,7 +127,7 @@ class OpenPrintTagMainData {
   @JsonKey(name: 'transmission_distance')
   final num? transmissionDistance;
 
-  final List<String>? tags;
+  final List<TagsEnum>? tags;
 
   final num? density;
 

@@ -14,8 +14,8 @@ void main() {
     test('encodes and decodes RGB color (3 bytes)', () async {
       final OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           primaryColor: Uint8List.fromList(<int>[0xFF, 0x00, 0x00]),
         ),
       );
@@ -35,8 +35,8 @@ void main() {
       () async {
         final OpenPrintTagData data = OpenPrintTagData(
           main: OpenPrintTagMainData(
-            materialClass: 'FFF',
-            materialType: 'PLA',
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
             primaryColor: Uint8List.fromList(<int>[0xFF, 0x00, 0x00, 0x7F]),
           ),
         );
@@ -71,8 +71,8 @@ void main() {
       for (final List<int> color in testColors) {
         final OpenPrintTagData data = OpenPrintTagData(
           main: OpenPrintTagMainData(
-            materialClass: 'FFF',
-            materialType: 'PLA',
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
             primaryColor: Uint8List.fromList(color),
           ),
         );
@@ -100,8 +100,8 @@ void main() {
     test('handles secondary colors with RGBA', () async {
       final OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           primaryColor: Uint8List.fromList(<int>[0xFF, 0x00, 0x00, 0xFF]),
           secondaryColor0: Uint8List.fromList(<int>[0x00, 0xFF, 0x00, 0x80]),
           secondaryColor1: Uint8List.fromList(<int>[0x00, 0x00, 0xFF]), // RGB
@@ -137,8 +137,8 @@ void main() {
     test('handles null color', () async {
       const OpenPrintTagData data = OpenPrintTagData(
         main: OpenPrintTagMainData(
-          materialClass: 'FFF',
-          materialType: 'PLA',
+          materialClass: MaterialClassEnum.FFF,
+          materialType: MaterialTypeEnum.PLA,
           primaryColor: null,
         ),
       );

@@ -23,9 +23,9 @@ abstract class _$OpenPrintTagMainDataCWProxy {
 
   OpenPrintTagMainData brandSpecificMaterialId(String? brandSpecificMaterialId);
 
-  OpenPrintTagMainData materialClass(String? materialClass);
+  OpenPrintTagMainData materialClass(MaterialClassEnum? materialClass);
 
-  OpenPrintTagMainData materialType(String? materialType);
+  OpenPrintTagMainData materialType(MaterialTypeEnum? materialType);
 
   OpenPrintTagMainData materialName(String? materialName);
 
@@ -33,7 +33,7 @@ abstract class _$OpenPrintTagMainDataCWProxy {
 
   OpenPrintTagMainData brandName(String? brandName);
 
-  OpenPrintTagMainData writeProtection(String? writeProtection);
+  OpenPrintTagMainData writeProtection(WriteProtectionEnum? writeProtection);
 
   OpenPrintTagMainData manufacturedDate(int? manufacturedDate);
 
@@ -65,7 +65,7 @@ abstract class _$OpenPrintTagMainDataCWProxy {
 
   OpenPrintTagMainData transmissionDistance(num? transmissionDistance);
 
-  OpenPrintTagMainData tags(List<String>? tags);
+  OpenPrintTagMainData tags(List<TagsEnum>? tags);
 
   OpenPrintTagMainData density(num? density);
 
@@ -133,12 +133,12 @@ abstract class _$OpenPrintTagMainDataCWProxy {
     String? brandSpecificInstanceId,
     String? brandSpecificPackageId,
     String? brandSpecificMaterialId,
-    String? materialClass,
-    String? materialType,
+    MaterialClassEnum? materialClass,
+    MaterialTypeEnum? materialType,
     String? materialName,
     String? materialAbbreviation,
     String? brandName,
-    String? writeProtection,
+    WriteProtectionEnum? writeProtection,
     int? manufacturedDate,
     String? countryOfOrigin,
     int? expirationDate,
@@ -154,7 +154,7 @@ abstract class _$OpenPrintTagMainDataCWProxy {
     Uint8List? secondaryColor3,
     Uint8List? secondaryColor4,
     num? transmissionDistance,
-    List<String>? tags,
+    List<TagsEnum>? tags,
     num? density,
     num? filamentDiameter,
     int? shoreHardnessA,
@@ -224,11 +224,11 @@ class _$OpenPrintTagMainDataCWProxyImpl
   ) => call(brandSpecificMaterialId: brandSpecificMaterialId);
 
   @override
-  OpenPrintTagMainData materialClass(String? materialClass) =>
+  OpenPrintTagMainData materialClass(MaterialClassEnum? materialClass) =>
       call(materialClass: materialClass);
 
   @override
-  OpenPrintTagMainData materialType(String? materialType) =>
+  OpenPrintTagMainData materialType(MaterialTypeEnum? materialType) =>
       call(materialType: materialType);
 
   @override
@@ -244,7 +244,7 @@ class _$OpenPrintTagMainDataCWProxyImpl
       call(brandName: brandName);
 
   @override
-  OpenPrintTagMainData writeProtection(String? writeProtection) =>
+  OpenPrintTagMainData writeProtection(WriteProtectionEnum? writeProtection) =>
       call(writeProtection: writeProtection);
 
   @override
@@ -308,7 +308,7 @@ class _$OpenPrintTagMainDataCWProxyImpl
       call(transmissionDistance: transmissionDistance);
 
   @override
-  OpenPrintTagMainData tags(List<String>? tags) => call(tags: tags);
+  OpenPrintTagMainData tags(List<TagsEnum>? tags) => call(tags: tags);
 
   @override
   OpenPrintTagMainData density(num? density) => call(density: density);
@@ -509,11 +509,11 @@ class _$OpenPrintTagMainDataCWProxyImpl
       materialClass: materialClass == const $CopyWithPlaceholder()
           ? _value.materialClass
           // ignore: cast_nullable_to_non_nullable
-          : materialClass as String?,
+          : materialClass as MaterialClassEnum?,
       materialType: materialType == const $CopyWithPlaceholder()
           ? _value.materialType
           // ignore: cast_nullable_to_non_nullable
-          : materialType as String?,
+          : materialType as MaterialTypeEnum?,
       materialName: materialName == const $CopyWithPlaceholder()
           ? _value.materialName
           // ignore: cast_nullable_to_non_nullable
@@ -529,7 +529,7 @@ class _$OpenPrintTagMainDataCWProxyImpl
       writeProtection: writeProtection == const $CopyWithPlaceholder()
           ? _value.writeProtection
           // ignore: cast_nullable_to_non_nullable
-          : writeProtection as String?,
+          : writeProtection as WriteProtectionEnum?,
       manufacturedDate: manufacturedDate == const $CopyWithPlaceholder()
           ? _value.manufacturedDate
           // ignore: cast_nullable_to_non_nullable
@@ -595,7 +595,7 @@ class _$OpenPrintTagMainDataCWProxyImpl
       tags: tags == const $CopyWithPlaceholder()
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
-          : tags as List<String>?,
+          : tags as List<TagsEnum>?,
       density: density == const $CopyWithPlaceholder()
           ? _value.density
           // ignore: cast_nullable_to_non_nullable
@@ -725,12 +725,21 @@ OpenPrintTagMainData _$OpenPrintTagMainDataFromJson(
   brandSpecificInstanceId: json['brand_specific_instance_id'] as String?,
   brandSpecificPackageId: json['brand_specific_package_id'] as String?,
   brandSpecificMaterialId: json['brand_specific_material_id'] as String?,
-  materialClass: json['material_class'] as String?,
-  materialType: json['material_type'] as String?,
+  materialClass: $enumDecodeNullable(
+    _$MaterialClassEnumEnumMap,
+    json['material_class'],
+  ),
+  materialType: $enumDecodeNullable(
+    _$MaterialTypeEnumEnumMap,
+    json['material_type'],
+  ),
   materialName: json['material_name'] as String?,
   materialAbbreviation: json['material_abbreviation'] as String?,
   brandName: json['brand_name'] as String?,
-  writeProtection: json['write_protection'] as String?,
+  writeProtection: $enumDecodeNullable(
+    _$WriteProtectionEnumEnumMap,
+    json['write_protection'],
+  ),
   manufacturedDate: (json['manufactured_date'] as num?)?.toInt(),
   countryOfOrigin: json['country_of_origin'] as String?,
   expirationDate: (json['expiration_date'] as num?)?.toInt(),
@@ -756,7 +765,9 @@ OpenPrintTagMainData _$OpenPrintTagMainDataFromJson(
     json['secondary_color_4'],
   ),
   transmissionDistance: json['transmission_distance'] as num?,
-  tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  tags: (json['tags'] as List<dynamic>?)
+      ?.map((e) => $enumDecode(_$TagsEnumEnumMap, e))
+      .toList(),
   density: json['density'] as num?,
   filamentDiameter: json['filament_diameter'] as num?,
   shoreHardnessA: (json['shore_hardness_a'] as num?)?.toInt(),
@@ -793,12 +804,12 @@ Map<String, dynamic> _$OpenPrintTagMainDataToJson(
   'brand_specific_instance_id': instance.brandSpecificInstanceId,
   'brand_specific_package_id': instance.brandSpecificPackageId,
   'brand_specific_material_id': instance.brandSpecificMaterialId,
-  'material_class': instance.materialClass,
-  'material_type': instance.materialType,
+  'material_class': _$MaterialClassEnumEnumMap[instance.materialClass],
+  'material_type': _$MaterialTypeEnumEnumMap[instance.materialType],
   'material_name': instance.materialName,
   'material_abbreviation': instance.materialAbbreviation,
   'brand_name': instance.brandName,
-  'write_protection': instance.writeProtection,
+  'write_protection': _$WriteProtectionEnumEnumMap[instance.writeProtection],
   'manufactured_date': instance.manufacturedDate,
   'country_of_origin': instance.countryOfOrigin,
   'expiration_date': instance.expirationDate,
@@ -824,7 +835,7 @@ Map<String, dynamic> _$OpenPrintTagMainDataToJson(
     instance.secondaryColor4,
   ),
   'transmission_distance': instance.transmissionDistance,
-  'tags': instance.tags,
+  'tags': instance.tags?.map((e) => _$TagsEnumEnumMap[e]!).toList(),
   'density': instance.density,
   'filament_diameter': instance.filamentDiameter,
   'shore_hardness_a': instance.shoreHardnessA,
@@ -848,4 +859,131 @@ Map<String, dynamic> _$OpenPrintTagMainDataToJson(
   'viscosity_60c': instance.viscosity60c,
   'container_volumetric_capacity': instance.containerVolumetricCapacity,
   'cure_wavelength': instance.cureWavelength,
+};
+
+const _$MaterialClassEnumEnumMap = {
+  MaterialClassEnum.FFF: 'FFF',
+  MaterialClassEnum.SLA: 'SLA',
+};
+
+const _$MaterialTypeEnumEnumMap = {
+  MaterialTypeEnum.PLA: 'PLA',
+  MaterialTypeEnum.PETG: 'PETG',
+  MaterialTypeEnum.TPU: 'TPU',
+  MaterialTypeEnum.ABS: 'ABS',
+  MaterialTypeEnum.ASA: 'ASA',
+  MaterialTypeEnum.PC: 'PC',
+  MaterialTypeEnum.PCTG: 'PCTG',
+  MaterialTypeEnum.PP: 'PP',
+  MaterialTypeEnum.PA6: 'PA6',
+  MaterialTypeEnum.PA11: 'PA11',
+  MaterialTypeEnum.PA12: 'PA12',
+  MaterialTypeEnum.PA66: 'PA66',
+  MaterialTypeEnum.CPE: 'CPE',
+  MaterialTypeEnum.TPE: 'TPE',
+  MaterialTypeEnum.HIPS: 'HIPS',
+  MaterialTypeEnum.PHA: 'PHA',
+  MaterialTypeEnum.PET: 'PET',
+  MaterialTypeEnum.PEI: 'PEI',
+  MaterialTypeEnum.PBT: 'PBT',
+  MaterialTypeEnum.PVB: 'PVB',
+  MaterialTypeEnum.PVA: 'PVA',
+  MaterialTypeEnum.PEKK: 'PEKK',
+  MaterialTypeEnum.PEEK: 'PEEK',
+  MaterialTypeEnum.BVOH: 'BVOH',
+  MaterialTypeEnum.TPC: 'TPC',
+  MaterialTypeEnum.PPS: 'PPS',
+  MaterialTypeEnum.PPSU: 'PPSU',
+  MaterialTypeEnum.PVC: 'PVC',
+  MaterialTypeEnum.PEBA: 'PEBA',
+  MaterialTypeEnum.PVDF: 'PVDF',
+  MaterialTypeEnum.PPA: 'PPA',
+  MaterialTypeEnum.PCL: 'PCL',
+  MaterialTypeEnum.PES: 'PES',
+  MaterialTypeEnum.PMMA: 'PMMA',
+  MaterialTypeEnum.POM: 'POM',
+  MaterialTypeEnum.PPE: 'PPE',
+  MaterialTypeEnum.PS: 'PS',
+  MaterialTypeEnum.PSU: 'PSU',
+  MaterialTypeEnum.TPI: 'TPI',
+  MaterialTypeEnum.SBS: 'SBS',
+};
+
+const _$WriteProtectionEnumEnumMap = {
+  WriteProtectionEnum.no: 'no',
+  WriteProtectionEnum.irreversible: 'irreversible',
+  WriteProtectionEnum.protect_page_unlockable: 'protect_page_unlockable',
+};
+
+const _$TagsEnumEnumMap = {
+  TagsEnum.filtration_recommended: 'filtration_recommended',
+  TagsEnum.biocompatible: 'biocompatible',
+  TagsEnum.home_compostable: 'home_compostable',
+  TagsEnum.industrially_compostable: 'industrially_compostable',
+  TagsEnum.bio_based: 'bio_based',
+  TagsEnum.antibacterial: 'antibacterial',
+  TagsEnum.air_filtering: 'air_filtering',
+  TagsEnum.abrasive: 'abrasive',
+  TagsEnum.foaming: 'foaming',
+  TagsEnum.castable: 'castable',
+  TagsEnum.self_extinguishing: 'self_extinguishing',
+  TagsEnum.paramagnetic: 'paramagnetic',
+  TagsEnum.radiation_shielding: 'radiation_shielding',
+  TagsEnum.high_temperature: 'high_temperature',
+  TagsEnum.esd_safe: 'esd_safe',
+  TagsEnum.conductive: 'conductive',
+  TagsEnum.emi_shielding: 'emi_shielding',
+  TagsEnum.blend: 'blend',
+  TagsEnum.water_soluble: 'water_soluble',
+  TagsEnum.ipa_soluble: 'ipa_soluble',
+  TagsEnum.limonene_soluble: 'limonene_soluble',
+  TagsEnum.low_outgassing: 'low_outgassing',
+  TagsEnum.matte: 'matte',
+  TagsEnum.silk: 'silk',
+  TagsEnum.translucent: 'translucent',
+  TagsEnum.transparent: 'transparent',
+  TagsEnum.without_pigments: 'without_pigments',
+  TagsEnum.iridescent: 'iridescent',
+  TagsEnum.pearlescent: 'pearlescent',
+  TagsEnum.glitter: 'glitter',
+  TagsEnum.glow_in_the_dark: 'glow_in_the_dark',
+  TagsEnum.neon: 'neon',
+  TagsEnum.illuminescent_color_change: 'illuminescent_color_change',
+  TagsEnum.temperature_color_change: 'temperature_color_change',
+  TagsEnum.gradual_color_change: 'gradual_color_change',
+  TagsEnum.coextruded: 'coextruded',
+  TagsEnum.contains_carbon: 'contains_carbon',
+  TagsEnum.contains_carbon_fiber: 'contains_carbon_fiber',
+  TagsEnum.contains_carbon_nano_tubes: 'contains_carbon_nano_tubes',
+  TagsEnum.contains_glass: 'contains_glass',
+  TagsEnum.contains_glass_fiber: 'contains_glass_fiber',
+  TagsEnum.contains_kevlar: 'contains_kevlar',
+  TagsEnum.contains_ptfe: 'contains_ptfe',
+  TagsEnum.contains_stone: 'contains_stone',
+  TagsEnum.contains_magnetite: 'contains_magnetite',
+  TagsEnum.contains_organic_material: 'contains_organic_material',
+  TagsEnum.contains_cork: 'contains_cork',
+  TagsEnum.contains_wax: 'contains_wax',
+  TagsEnum.contains_wood: 'contains_wood',
+  TagsEnum.contains_algae: 'contains_algae',
+  TagsEnum.contains_bamboo: 'contains_bamboo',
+  TagsEnum.contains_pine: 'contains_pine',
+  TagsEnum.contains_ceramic: 'contains_ceramic',
+  TagsEnum.contains_boron_carbide: 'contains_boron_carbide',
+  TagsEnum.contains_metal: 'contains_metal',
+  TagsEnum.contains_bronze: 'contains_bronze',
+  TagsEnum.contains_iron: 'contains_iron',
+  TagsEnum.contains_steel: 'contains_steel',
+  TagsEnum.contains_silver: 'contains_silver',
+  TagsEnum.contains_copper: 'contains_copper',
+  TagsEnum.contains_aluminium: 'contains_aluminium',
+  TagsEnum.contains_brass: 'contains_brass',
+  TagsEnum.contains_tungsten: 'contains_tungsten',
+  TagsEnum.imitates_wood: 'imitates_wood',
+  TagsEnum.imitates_metal: 'imitates_metal',
+  TagsEnum.imitates_marble: 'imitates_marble',
+  TagsEnum.imitates_stone: 'imitates_stone',
+  TagsEnum.lithophane: 'lithophane',
+  TagsEnum.recycled: 'recycled',
+  TagsEnum.limited_edition: 'limited_edition',
 };

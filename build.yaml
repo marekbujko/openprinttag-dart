@@ -7,13 +7,41 @@ targets:
     builders:
       open_print_tag|yaml_data_builder:
         enabled: true
+        generate_for:
+          - data-submodule/data/aux_fields.yaml
+          - data-submodule/data/main_fields.yaml
+          - data-submodule/data/meta_fields.yaml
+      open_print_tag|yaml_enum_builder:
+        enabled: true
+        generate_for:
+          - data-submodule/data/material_class_enum.yaml
+          - data-submodule/data/material_type_enum.yaml
+          - data-submodule/data/tag_categories_enum.yaml
+          - data-submodule/data/tags_enum.yaml
+          - data-submodule/data/write_protection_enum.yaml
 
 builders:
   yaml_data_builder:
     import: "tool/builders/yaml_data_builder.dart"
     builder_factories: ["yamlDataBuilder"]
     build_extensions:
-      ^data-submodule/data/{{}}.yaml: ["lib/src/data/{{}}.data.g.dart"]
-      ^data-submodule/data/{{}}.yml:  ["lib/src/data/{{}}.data.g.dart"]
-    auto_apply: none
+      ^data-submodule/data/aux_fields.yaml: ["lib/src/data/aux_fields.data.g.dart"]
+      ^data-submodule/data/main_fields.yaml: ["lib/src/data/main_fields.data.g.dart"]
+      ^data-submodule/data/meta_fields.yaml: ["lib/src/data/meta_fields.data.g.dart"]
+    auto_apply: root_package
     build_to: source
+    runs_before: ["json_serializable"]
+    required_inputs: [".yaml"]
+  yaml_enum_builder:
+    import: "tool/builders/yaml_enum_builder.dart"
+    builder_factories: ["yamlEnumBuilder"]
+    build_extensions:
+      ^data-submodule/data/material_class_enum.yaml: ["lib/src/enums/material_class_enum.enum.g.dart"]
+      ^data-submodule/data/material_type_enum.yaml: ["lib/src/enums/material_type_enum.enum.g.dart"]
+      ^data-submodule/data/tag_categories_enum.yaml: ["lib/src/enums/tag_categories_enum.enum.g.dart"]
+      ^data-submodule/data/tags_enum.yaml: ["lib/src/enums/tags_enum.enum.g.dart"]
+      ^data-submodule/data/write_protection_enum.yaml: ["lib/src/enums/write_protection_enum.enum.g.dart"]
+    auto_apply: root_package
+    build_to: source
+    runs_before: ["json_serializable"]
+    required_inputs: [".yaml"]
