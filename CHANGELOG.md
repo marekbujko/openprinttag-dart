@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.14
+
+### Added
+- **Tests**: Comprehensive color encoding tests for RGB and RGBA formats including alpha channel support
+
 ## 0.0.13
 
 ### Added
