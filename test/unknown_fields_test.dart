@@ -13,91 +13,117 @@ void main() {
 
   group('Unknown fields preservation', () {
     test('preserves unknown fields in MAIN section', () async {
-      final OpenPrintTagMainData mainWithUnknown = OpenPrintTagMainData(
-        materialClass: MaterialClassEnum.FFF,
-        materialType: MaterialTypeEnum.PLA,
-        materialName: 'Test Material',
-        unknownFields: <int, CborValue>{
-          999: const CborSmallInt(42),
-          998: CborString('future_data'),
-        },
+      final Map<String, String> unknownFields = <String, String>{
+        CborHexUtils.intToHex(999): CborHexUtils.cborValueToHex(
+          const CborSmallInt(42),
+        ),
+        CborHexUtils.intToHex(998): CborHexUtils.cborValueToHex(
+          CborString('future_data'),
+        ),
+      };
+
+      final OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: const OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Test Material',
+          ),
+        ),
+        unknownFields: UnknownFields(main: unknownFields),
       );
 
-      final OpenPrintTagData dataWithUnknown = OpenPrintTagData(
-        main: mainWithUnknown,
-      );
+      final Uint8List encodedPayload = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded = await parser.decode(encodedPayload);
 
-      final Uint8List payloadWithUnknown = parser.encode(
-        dataWithUnknown,
-        size: 320,
-      );
-      final OpenPrintTagData decoded = await parser.decode(payloadWithUnknown);
+      expect(decoded.data.main, isNotNull);
+      expect(decoded.unknownFields, isNotNull);
+      expect(decoded.unknownFields!.main, isNotNull);
+      expect(decoded.unknownFields!.main!.length, 2);
 
-      expect(decoded.main, isNotNull);
-      expect(decoded.main!.unknownFields, isNotNull);
-      expect(decoded.main!.unknownFields!.length, 2);
-      expect(decoded.main!.unknownFields![999], isA<CborSmallInt>());
-      expect((decoded.main!.unknownFields![999] as CborSmallInt).value, 42);
-      expect(decoded.main!.unknownFields![998], isA<CborString>());
-      expect(
-        (decoded.main!.unknownFields![998] as CborString).toString(),
-        'future_data',
-      );
+      final String key999Hex = CborHexUtils.intToHex(999);
+      final String key998Hex = CborHexUtils.intToHex(998);
+      expect(decoded.unknownFields!.main!.containsKey(key999Hex), isTrue);
+      expect(decoded.unknownFields!.main!.containsKey(key998Hex), isTrue);
 
-      expect(decoded.main!.materialClass, MaterialClassEnum.FFF);
-      expect(decoded.main!.materialType, MaterialTypeEnum.PLA);
-      expect(decoded.main!.materialName, 'Test Material');
+      final CborValue val999 = CborHexUtils.hexToCborValue(
+        decoded.unknownFields!.main![key999Hex]!,
+      );
+      expect(val999, isA<CborSmallInt>());
+      expect((val999 as CborSmallInt).value, 42);
+
+      final CborValue val998 = CborHexUtils.hexToCborValue(
+        decoded.unknownFields!.main![key998Hex]!,
+      );
+      expect(val998, isA<CborString>());
+      expect((val998 as CborString).toString(), 'future_data');
+
+      expect(decoded.data.main!.materialClass, MaterialClassEnum.FFF);
+      expect(decoded.data.main!.materialType, MaterialTypeEnum.PLA);
+      expect(decoded.data.main!.materialName, 'Test Material');
     });
 
     test('preserves unknown fields in AUX section', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+          ),
+          aux: OpenPrintTagAuxData(consumedWeight: 50.5, workgroup: 'TestGrp'),
         ),
-        aux: OpenPrintTagAuxData(consumedWeight: 50.5, workgroup: 'TestGrp'),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData decoded1 = await parser.decode(payload);
+      final Uint8List encodedPayload1 = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded1 = await parser.decode(encodedPayload1);
 
-      final OpenPrintTagAuxData auxWithUnknown = OpenPrintTagAuxData(
-        consumedWeight: decoded1.aux!.consumedWeight,
-        workgroup: decoded1.aux!.workgroup,
-        unknownFields: <int, CborValue>{777: const CborSmallInt(123)},
+      final Map<String, String> auxUnknownFields = <String, String>{
+        CborHexUtils.intToHex(777): CborHexUtils.cborValueToHex(
+          const CborSmallInt(123),
+        ),
+      };
+
+      final OpenPrintTagPayload payloadWithUnknown = OpenPrintTagPayload(
+        data: decoded1.data,
+        unknownFields: UnknownFields(aux: auxUnknownFields),
       );
 
-      final OpenPrintTagData dataWithUnknown = OpenPrintTagData(
-        main: decoded1.main,
-        aux: auxWithUnknown,
-      );
-
-      final Uint8List payloadWithUnknown = parser.encode(
-        dataWithUnknown,
+      final Uint8List encodedPayload2 = parser.encode(
+        payloadWithUnknown,
         size: 320,
       );
-      final OpenPrintTagData decoded2 = await parser.decode(payloadWithUnknown);
+      final OpenPrintTagPayload decoded2 = await parser.decode(encodedPayload2);
 
-      expect(decoded2.aux, isNotNull);
-      expect(decoded2.aux!.unknownFields, isNotNull);
-      expect(decoded2.aux!.unknownFields!.length, 1);
-      expect(decoded2.aux!.unknownFields![777], isA<CborSmallInt>());
-      expect((decoded2.aux!.unknownFields![777] as CborSmallInt).value, 123);
+      expect(decoded2.data.aux, isNotNull);
+      expect(decoded2.unknownFields, isNotNull);
+      expect(decoded2.unknownFields!.aux, isNotNull);
+      expect(decoded2.unknownFields!.aux!.length, 1);
 
-      expect(decoded2.aux!.consumedWeight, 50.5);
-      expect(decoded2.aux!.workgroup, 'TestGrp');
+      final String key777Hex = CborHexUtils.intToHex(777);
+      expect(decoded2.unknownFields!.aux!.containsKey(key777Hex), isTrue);
+
+      final CborValue val777 = CborHexUtils.hexToCborValue(
+        decoded2.unknownFields!.aux![key777Hex]!,
+      );
+      expect(val777, isA<CborSmallInt>());
+      expect((val777 as CborSmallInt).value, 123);
+
+      expect(decoded2.data.aux!.consumedWeight, 50.5);
+      expect(decoded2.data.aux!.workgroup, 'TestGrp');
     });
 
     test('preserves binary unknown fields exactly', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData decoded1 = await parser.decode(payload);
+      final Uint8List encodedPayload1 = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded1 = await parser.decode(encodedPayload1);
 
       final Uint8List binaryData = Uint8List.fromList(<int>[
         0xDE,
@@ -105,28 +131,35 @@ void main() {
         0xBE,
         0xEF,
       ]);
-      final OpenPrintTagMainData mainWithBinary = OpenPrintTagMainData(
-        materialClass: decoded1.main!.materialClass,
-        materialType: decoded1.main!.materialType,
-        unknownFields: <int, CborValue>{888: CborBytes(binaryData)},
+
+      final Map<String, String> mainUnknownFields = <String, String>{
+        CborHexUtils.intToHex(888): CborHexUtils.cborValueToHex(
+          CborBytes(binaryData),
+        ),
+      };
+
+      final OpenPrintTagPayload payloadWithBinary = OpenPrintTagPayload(
+        data: decoded1.data,
+        unknownFields: UnknownFields(main: mainUnknownFields),
       );
 
-      final OpenPrintTagData dataWithBinary = OpenPrintTagData(
-        main: mainWithBinary,
-      );
-
-      final Uint8List payloadWithBinary = parser.encode(
-        dataWithBinary,
+      final Uint8List encodedPayload2 = parser.encode(
+        payloadWithBinary,
         size: 320,
       );
-      final OpenPrintTagData decoded2 = await parser.decode(payloadWithBinary);
+      final OpenPrintTagPayload decoded2 = await parser.decode(encodedPayload2);
 
-      expect(decoded2.main!.unknownFields, isNotNull);
-      expect(decoded2.main!.unknownFields![888], isA<CborBytes>());
+      expect(decoded2.unknownFields, isNotNull);
+      expect(decoded2.unknownFields!.main, isNotNull);
 
-      final List<int> decodedBytes =
-          (decoded2.main!.unknownFields![888] as CborBytes).bytes;
-      expect(decodedBytes, <int>[0xDE, 0xAD, 0xBE, 0xEF]);
+      final String key888Hex = CborHexUtils.intToHex(888);
+      expect(decoded2.unknownFields!.main!.containsKey(key888Hex), isTrue);
+
+      final CborValue val888 = CborHexUtils.hexToCborValue(
+        decoded2.unknownFields!.main![key888Hex]!,
+      );
+      expect(val888, isA<CborBytes>());
+      expect((val888 as CborBytes).bytes, <int>[0xDE, 0xAD, 0xBE, 0xEF]);
     });
   });
 }

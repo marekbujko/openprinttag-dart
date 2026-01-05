@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:cbor/cbor.dart';
-import 'package:convert/convert.dart' as hex_convert;
 import 'package:ieee754/ieee754.dart';
+import 'package:open_print_tag/src/cbor/cbor_hex_utils.dart';
 import 'package:uuid/uuid.dart';
 
 enum FieldType {
@@ -236,8 +237,25 @@ class ColorRgbaField extends BytesField {
     required super.key,
     required super.name,
     super.maxLength = 4,
-    super.required,
+    super.required = false,
   });
+
+  @override
+  FieldType get type => FieldType.colorRgba;
+
+  @override
+  dynamic decode(CborValue data) {
+    final List<int> bytes = (data as CborBytes).bytes;
+    return '#${CborHexUtils.bytesToHex(bytes)}';
+  }
+
+  @override
+  Uint8List convertToBytes(dynamic data) {
+    if (data is String) {
+      return CborHexUtils.hexToBytes(data);
+    }
+    return super.convertToBytes(data);
+  }
 }
 
 class BytesField extends Field {
@@ -253,26 +271,12 @@ class BytesField extends Field {
   @override
   dynamic decode(CborValue data) {
     final List<int> bytes = (data as CborBytes).bytes;
-    return <String, String>{'hex': hex_convert.hex.encode(bytes)};
+    return CborHexUtils.bytesToHex(bytes);
   }
 
   @override
   CborValue encode(dynamic data) {
-    Uint8List bytes;
-
-    if (data is Uint8List) {
-      bytes = data;
-    } else if (data is List<int>) {
-      bytes = Uint8List.fromList(data);
-    } else if (data is Map && data.containsKey('hex')) {
-      bytes = _hexToBytes(data['hex'] as String);
-    } else if (data is String) {
-      bytes = Uint8List.fromList(utf8.encode(data));
-    } else if (data is int) {
-      bytes = _intToBytes(data);
-    } else {
-      throw ArgumentError('Cannot encode ${data.runtimeType} to bytes');
-    }
+    final Uint8List bytes = convertToBytes(data);
 
     if (maxLength != null && bytes.length > maxLength!) {
       throw ArgumentError(
@@ -283,9 +287,20 @@ class BytesField extends Field {
     return CborBytes(bytes);
   }
 
-  Uint8List _hexToBytes(String hexString) {
-    final String cleaned = hexString.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
-    return Uint8List.fromList(hex_convert.hex.decode(cleaned));
+  Uint8List convertToBytes(dynamic data) {
+    if (data is Uint8List) {
+      return data;
+    }
+    if (data is List<int>) {
+      return Uint8List.fromList(data);
+    }
+    if (data is String) {
+      return Uint8List.fromList(utf8.encode(data));
+    }
+    if (data is int) {
+      return _intToBytes(data);
+    }
+    throw ArgumentError('Cannot encode ${data.runtimeType} to bytes');
   }
 
   Uint8List _intToBytes(int value) {

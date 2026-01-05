@@ -39,134 +39,178 @@ void main() {
     });
 
     test('encodes and decodes basic payload', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData result = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload result = await parser.decode(encoded);
 
-      expect(result.meta, isNotNull);
-      expect(result.main, isNotNull);
-      expect(result.main!.materialClass, MaterialClassEnum.FFF);
-      expect(result.main!.materialType, MaterialTypeEnum.PLA);
+      expect(result.data.meta, isNotNull);
+      expect(result.data.main, isNotNull);
+      expect(result.data.main!.materialClass, MaterialClassEnum.FFF);
+      expect(result.data.main!.materialType, MaterialTypeEnum.PLA);
     });
   });
 
   group('Encoding', () {
     test('encodes basic main data', () {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialName: 'PLA Premium',
-          materialType: MaterialTypeEnum.PLA,
-          minPrintTemperature: 215,
-          minBedTemperature: 60,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialName: 'PLA Premium',
+            materialType: MaterialTypeEnum.PLA,
+            minPrintTemperature: 215,
+            minBedTemperature: 60,
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
+      final Uint8List encoded = parser.encode(payload, size: 320);
 
-      expect(payload, isNotEmpty);
-      expect(payload, isA<Uint8List>());
+      expect(encoded, isNotEmpty);
+      expect(encoded, isA<Uint8List>());
     });
 
     test('encodes data with meta and aux regions', () {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialName: 'PETG Premium',
-          materialType: MaterialTypeEnum.PETG,
-          minPrintTemperature: 230,
-          minBedTemperature: 85,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialName: 'PETG Premium',
+            materialType: MaterialTypeEnum.PETG,
+            minPrintTemperature: 230,
+            minBedTemperature: 85,
+          ),
+          aux: OpenPrintTagAuxData(workgroup: 'ProdGrp', consumedWeight: 50.5),
         ),
-        aux: OpenPrintTagAuxData(workgroup: 'ProdGrp', consumedWeight: 50.5),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
+      final Uint8List encoded = parser.encode(payload, size: 320);
 
-      expect(payload, isNotEmpty);
-      expect(payload, isA<Uint8List>());
+      expect(encoded, isNotEmpty);
+      expect(encoded, isA<Uint8List>());
     });
 
     test('throws when no main data provided', () {
-      const OpenPrintTagData data = OpenPrintTagData();
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(),
+      );
 
-      expect(() => parser.encode(data, size: 320), throwsArgumentError);
+      expect(() => parser.encode(payload, size: 320), throwsArgumentError);
     });
 
     test('preserves data during round-trip', () async {
-      const OpenPrintTagData originalData = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialName: 'ABS Premium',
-          materialType: MaterialTypeEnum.ABS,
-          minPrintTemperature: 240,
-          minBedTemperature: 100,
-          density: 1.04,
+      const OpenPrintTagPayload originalPayload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialName: 'ABS Premium',
+            materialType: MaterialTypeEnum.ABS,
+            minPrintTemperature: 240,
+            minBedTemperature: 100,
+            density: 1.04,
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(originalData, size: 320);
-      final OpenPrintTagData decodedData = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(originalPayload, size: 320);
+      final OpenPrintTagPayload decodedPayload = await parser.decode(encoded);
 
-      expect(decodedData.main, isNotNull);
-      expect(decodedData.main!.materialClass, originalData.main!.materialClass);
-      expect(decodedData.main!.materialName, originalData.main!.materialName);
-      expect(decodedData.main!.materialType, originalData.main!.materialType);
+      expect(decodedPayload.data.main, isNotNull);
       expect(
-        decodedData.main!.minPrintTemperature,
-        originalData.main!.minPrintTemperature,
+        decodedPayload.data.main!.materialClass,
+        originalPayload.data.main!.materialClass,
       );
       expect(
-        decodedData.main!.minBedTemperature,
-        originalData.main!.minBedTemperature,
+        decodedPayload.data.main!.materialName,
+        originalPayload.data.main!.materialName,
       );
-      expect(decodedData.main!.density, originalData.main!.density);
-      expect(decodedData.meta, isNotNull);
+      expect(
+        decodedPayload.data.main!.materialType,
+        originalPayload.data.main!.materialType,
+      );
+      expect(
+        decodedPayload.data.main!.minPrintTemperature,
+        originalPayload.data.main!.minPrintTemperature,
+      );
+      expect(
+        decodedPayload.data.main!.minBedTemperature,
+        originalPayload.data.main!.minBedTemperature,
+      );
+      expect(
+        decodedPayload.data.main!.density,
+        originalPayload.data.main!.density,
+      );
+      expect(decodedPayload.data.meta, isNotNull);
     });
 
     test('preserves all regions during round-trip', () async {
-      const OpenPrintTagData originalData = OpenPrintTagData(
-        meta: OpenPrintTagMetaData(),
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialName: 'TPU Flexible',
-          materialType: MaterialTypeEnum.TPU,
-          minPrintTemperature: 220,
-          minBedTemperature: 50,
+      const OpenPrintTagPayload originalPayload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          meta: OpenPrintTagMetaData(),
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialName: 'TPU Flexible',
+            materialType: MaterialTypeEnum.TPU,
+            minPrintTemperature: 220,
+            minBedTemperature: 50,
+          ),
+          aux: OpenPrintTagAuxData(
+            workgroup: 'TestGrp',
+            consumedWeight: 123.45,
+          ),
         ),
-        aux: OpenPrintTagAuxData(workgroup: 'TestGrp', consumedWeight: 123.45),
       );
 
-      final Uint8List payload = parser.encode(originalData, size: 320);
-      final OpenPrintTagData decodedData = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(originalPayload, size: 320);
+      final OpenPrintTagPayload decodedPayload = await parser.decode(encoded);
 
-      expect(decodedData.main, isNotNull);
-      expect(decodedData.main!.materialClass, originalData.main!.materialClass);
-      expect(decodedData.main!.materialName, originalData.main!.materialName);
-      expect(decodedData.main!.materialType, originalData.main!.materialType);
-      expect(decodedData.aux, isNotNull);
-      expect(decodedData.aux!.workgroup, originalData.aux!.workgroup);
-      expect(decodedData.aux!.consumedWeight, originalData.aux!.consumedWeight);
-      expect(decodedData.meta, isNotNull);
+      expect(decodedPayload.data.main, isNotNull);
+      expect(
+        decodedPayload.data.main!.materialClass,
+        originalPayload.data.main!.materialClass,
+      );
+      expect(
+        decodedPayload.data.main!.materialName,
+        originalPayload.data.main!.materialName,
+      );
+      expect(
+        decodedPayload.data.main!.materialType,
+        originalPayload.data.main!.materialType,
+      );
+      expect(decodedPayload.data.aux, isNotNull);
+      expect(
+        decodedPayload.data.aux!.workgroup,
+        originalPayload.data.aux!.workgroup,
+      );
+      expect(
+        decodedPayload.data.aux!.consumedWeight,
+        originalPayload.data.aux!.consumedWeight,
+      );
+      expect(decodedPayload.data.meta, isNotNull);
     });
 
     test('throws when required field is missing', () {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialName: 'PLA Premium',
-          materialType: MaterialTypeEnum.PLA,
-          minPrintTemperature: 215,
-          minBedTemperature: 60,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialName: 'PLA Premium',
+            materialType: MaterialTypeEnum.PLA,
+            minPrintTemperature: 215,
+            minBedTemperature: 60,
+          ),
         ),
       );
 
       expect(
-        () => parser.encode(data, size: 320),
+        () => parser.encode(payload, size: 320),
         throwsA(
           isA<ArgumentError>().having(
             (ArgumentError e) => e.message,
@@ -180,136 +224,154 @@ void main() {
 
   group('Meta region', () {
     test('creates minimal META without aux', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          materialName: 'Test Material',
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Test Material',
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData decoded = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded = await parser.decode(encoded);
 
-      expect(decoded.meta, isNotNull);
-      expect(decoded.main, isNotNull);
+      expect(decoded.data.meta, isNotNull);
+      expect(decoded.data.main, isNotNull);
     });
 
     test('creates META with aux region', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+          ),
+          aux: OpenPrintTagAuxData(workgroup: 'TestGrp', consumedWeight: 100.5),
         ),
-        aux: OpenPrintTagAuxData(workgroup: 'TestGrp', consumedWeight: 100.5),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData decoded = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded = await parser.decode(encoded);
 
-      expect(decoded.meta, isNotNull);
-      expect(decoded.main, isNotNull);
-      expect(decoded.aux, isNotNull);
+      expect(decoded.data.meta, isNotNull);
+      expect(decoded.data.main, isNotNull);
+      expect(decoded.data.aux, isNotNull);
     });
 
     test('validates meta structure', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          materialName: 'Test Material',
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Test Material',
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
-      final OpenPrintTagData decoded = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(payload, size: 320);
+      final OpenPrintTagPayload decoded = await parser.decode(encoded);
 
-      expect(decoded.meta, isNotNull);
-      expect(decoded.main, isNotNull);
+      expect(decoded.data.meta, isNotNull);
+      expect(decoded.data.main, isNotNull);
     });
   });
 
   group('Fixed size encoding', () {
     test('creates tag with fixed size and padding', () async {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          materialName: 'Test Material',
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Test Material',
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(data, size: 320);
+      final Uint8List encoded = parser.encode(payload, size: 320);
 
-      expect(payload.length, 320);
+      expect(encoded.length, 320);
 
-      final OpenPrintTagData decoded = await parser.decode(payload);
-      expect(decoded.main, isNotNull);
-      expect(decoded.main!.materialClass, MaterialClassEnum.FFF);
-      expect(decoded.meta, isNotNull);
+      final OpenPrintTagPayload decoded = await parser.decode(encoded);
+      expect(decoded.data.main, isNotNull);
+      expect(decoded.data.main!.materialClass, MaterialClassEnum.FFF);
+      expect(decoded.data.meta, isNotNull);
     });
 
     test('throws when data exceeds totalSize', () {
-      const OpenPrintTagData data = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          materialName: 'Very long material name that takes up lots of space',
+      const OpenPrintTagPayload payload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Very long material name that takes up lots of space',
+          ),
         ),
       );
 
-      expect(() => parser.encode(data, size: 10), throwsArgumentError);
+      expect(() => parser.encode(payload, size: 10), throwsArgumentError);
     });
   });
 
   group('Update mode', () {
     test('preserves META sizes when updating', () async {
-      const OpenPrintTagData initialData = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          minPrintTemperature: 200,
+      const OpenPrintTagPayload initialPayload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            minPrintTemperature: 200,
+          ),
         ),
       );
 
-      final Uint8List initialPayload = parser.encode(initialData, size: 320);
-      final OpenPrintTagData decoded = await parser.decode(initialPayload);
+      final Uint8List initialEncoded = parser.encode(initialPayload, size: 320);
+      final OpenPrintTagPayload decoded = await parser.decode(initialEncoded);
 
-      expect(decoded.main, isNotNull);
+      expect(decoded.data.main, isNotNull);
 
-      const OpenPrintTagData updatedData = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          minPrintTemperature: 220,
+      const OpenPrintTagPayload updatedPayload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            minPrintTemperature: 220,
+          ),
         ),
       );
 
-      final Uint8List updatedPayload = parser.encode(updatedData, size: 320);
-      final OpenPrintTagData decodedUpdated = await parser.decode(
-        updatedPayload,
+      final Uint8List updatedEncoded = parser.encode(updatedPayload, size: 320);
+      final OpenPrintTagPayload decodedUpdated = await parser.decode(
+        updatedEncoded,
       );
 
-      expect(decodedUpdated.main!.minPrintTemperature, 220);
+      expect(decodedUpdated.data.main!.minPrintTemperature, 220);
     });
 
     test('throws when updated data exceeds fixed size', () async {
-      const OpenPrintTagData initialData = OpenPrintTagData(
-        main: OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
+      const OpenPrintTagPayload initialPayload = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          main: OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+          ),
         ),
       );
 
-      final Uint8List payload = parser.encode(initialData, size: 100);
-      final OpenPrintTagData decoded = await parser.decode(payload);
+      final Uint8List encoded = parser.encode(initialPayload, size: 100);
+      final OpenPrintTagPayload decoded = await parser.decode(encoded);
 
-      final OpenPrintTagData tooLarge = OpenPrintTagData(
-        meta: decoded.meta,
-        main: const OpenPrintTagMainData(
-          materialClass: MaterialClassEnum.FFF,
-          materialType: MaterialTypeEnum.PLA,
-          materialName: 'Very long name that will not fit',
+      final OpenPrintTagPayload tooLarge = OpenPrintTagPayload(
+        data: OpenPrintTagData(
+          meta: decoded.data.meta,
+          main: const OpenPrintTagMainData(
+            materialClass: MaterialClassEnum.FFF,
+            materialType: MaterialTypeEnum.PLA,
+            materialName: 'Very long name that will not fit',
+          ),
         ),
       );
 

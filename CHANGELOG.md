@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.2.0
+
+### Breaking Changes
+- **API refactoring**: `OpenPrintTagParser.decode()` and `encode()` now work with `OpenPrintTagPayload` instead of `OpenPrintTagData`
+  - Previously: `Future<OpenPrintTagData> decode(Uint8List payload)`
+  - Now: `Future<OpenPrintTagPayload> decode(Uint8List payload)`
+  - Previously: `Uint8List encode(OpenPrintTagData data, {required int size})`
+  - Now: `Uint8List encode(OpenPrintTagPayload payload, {required int size})`
+  - `OpenPrintTagPayload` wraps `OpenPrintTagData` with optional `unknownFields` support
+
+### Added
+- **Unknown fields support**: Decode now preserves unknown CBOR fields and encode merges them back
+  - New `OpenPrintTagPayload` model wrapping data with `unknownFields`
+  - New `UnknownFields` model storing unknown CBOR keys/values as hex strings
+  - Unknown fields preserved across decode/encode round-trips
+- **CBOR hex utilities**: New `CborHexUtils` class for converting between CBOR values and hex strings
+- **JSON validation**: New `JsonValidator` class for validating OpenPrintTag data against schema
+  - Validates required fields, types, values, and max lengths
+  - Returns structured `ValidationResult` with categorized errors
+
+### Changed
+- **Decoder refactoring**: `OpenPrintTagDecoder.decodePayload()` now returns `OpenPrintTagPayload` with unknown fields
+- **Encoder refactoring**: `OpenPrintTagEncoder.encodePayload()` now accepts `OpenPrintTagPayload` and merges unknown fields
+- **Data submodule update**: Updated to latest OpenPrintTag data definitions
+
 ## 0.1.2
 
 ### Added

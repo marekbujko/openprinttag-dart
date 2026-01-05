@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:cbor/cbor.dart';
 import 'package:open_print_tag/models/open_print_tag_aux_data.dart';
-import 'package:open_print_tag/models/open_print_tag_data.dart';
+import 'package:open_print_tag/models/open_print_tag_payload.dart';
+import 'package:open_print_tag/models/unknown_fields.dart';
+import 'package:open_print_tag/src/cbor/cbor_hex_utils.dart';
 import 'package:open_print_tag/src/cbor/cbor_utils.dart';
 import 'package:open_print_tag/src/cbor/fields/fields_manager.dart';
 
@@ -17,33 +19,30 @@ class OpenPrintTagEncoder {
     required this.auxFields,
   });
 
-  Uint8List encodePayload(OpenPrintTagData data, {required int size}) {
-    if (data.main == null) {
+  Uint8List encodePayload(OpenPrintTagPayload payload, {required int size}) {
+    if (payload.data.main == null) {
       throw ArgumentError('Main data must be provided');
     }
 
     const int auxSize = 32;
     final int auxOffset = size - auxSize;
 
-    final Map<String, dynamic> metaJson = <String, dynamic>{
-      'aux_region_offset': auxOffset,
-    };
     final Uint8List metaBytes = _encodeSection(
-      metaJson,
+      <String, dynamic>{'aux_region_offset': auxOffset},
       metaFields,
-      indefinite: false,
+      unknownFields: payload.unknownFields?.meta,
     );
 
     final Uint8List mainBytes = _encodeSection(
-      data.main!.toJson(),
+      payload.data.main!.toJson(),
       mainFields,
-      indefinite: false,
+      unknownFields: payload.unknownFields?.main,
     );
 
     final Uint8List auxBytes = _encodeSection(
-      data.aux?.toJson() ?? <String, dynamic>{},
+      payload.data.aux?.toJson() ?? <String, dynamic>{},
       auxFields,
-      indefinite: false,
+      unknownFields: payload.unknownFields?.aux,
     );
 
     final int mainOffset = metaBytes.length;
@@ -72,32 +71,29 @@ class OpenPrintTagEncoder {
   }
 
   Uint8List encodeAuxSection(OpenPrintTagAuxData auxData) {
-    return _encodeSection(auxData.toJson(), auxFields, indefinite: false);
+    return _encodeSection(auxData.toJson(), auxFields);
   }
 
   Uint8List _encodeSection(
     Map<String, dynamic> data,
     FieldsManager fields, {
-    required bool indefinite,
+    UnknownFieldsRegion? unknownFields,
   }) {
     CborUtils.removeNullValues(data);
-    final Map<int, CborValue> encoded = fields.encode(data);
 
-    final Map<CborSmallInt, CborValue> cborMap = encoded.map(
-      (int key, CborValue value) =>
-          MapEntry<CborSmallInt, CborValue>(CborSmallInt(key), value),
+    final Map<int, CborValue> encoded = fields.encode(
+      data,
+      unknownFields: unknownFields != null
+          ? CborHexUtils.hexMapToCborMap(unknownFields)
+          : null,
     );
 
-    final Uint8List bytes = Uint8List.fromList(
-      cbor.encode(
-        CborMap(
-          cborMap,
-          type: indefinite
-              ? CborLengthType.indefinite
-              : CborLengthType.definite,
-        ),
-      ),
-    );
+    final CborMap cborMap = CborMap(<CborSmallInt, CborValue>{
+      for (final MapEntry<int, CborValue> e in encoded.entries)
+        CborSmallInt(e.key): e.value,
+    });
+
+    final Uint8List bytes = Uint8List.fromList(cbor.encode(cborMap));
 
     if (bytes.length > 512) {
       throw ArgumentError(

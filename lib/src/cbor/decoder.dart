@@ -5,6 +5,9 @@ import 'package:open_print_tag/models/open_print_tag_aux_data.dart';
 import 'package:open_print_tag/models/open_print_tag_data.dart';
 import 'package:open_print_tag/models/open_print_tag_main_data.dart';
 import 'package:open_print_tag/models/open_print_tag_meta_data.dart';
+import 'package:open_print_tag/models/open_print_tag_payload.dart';
+import 'package:open_print_tag/models/unknown_fields.dart';
+import 'package:open_print_tag/src/cbor/cbor_hex_utils.dart';
 import 'package:open_print_tag/src/cbor/cbor_utils.dart';
 import 'package:open_print_tag/src/cbor/fields/fields_manager.dart';
 import 'package:open_print_tag/src/cbor/fields/ndef_region.dart';
@@ -20,7 +23,7 @@ class OpenPrintTagDecoder {
     required this.auxFields,
   });
 
-  Future<OpenPrintTagData> decodePayload(Uint8List payload) async {
+  Future<OpenPrintTagPayload> decodePayload(Uint8List payload) async {
     final CborMap? metaCborMap = await CborUtils.getFirstCborMap(payload);
 
     if (metaCborMap == null) {
@@ -28,40 +31,60 @@ class OpenPrintTagDecoder {
     }
     final int metaSize = cbor.encode(metaCborMap).length;
 
-    final Map<String, dynamic> metaData = await _readMetaRegion(
-      payload,
-      metaSize,
-    );
-    final Map<String, dynamic> mainData = await _readMainRegion(
-      payload,
-      metaData,
-      metaSize,
-    );
-    final Map<String, dynamic>? auxData = await _readAuxRegion(
-      payload,
-      metaData,
-    );
-
-    return OpenPrintTagData(
-      meta: OpenPrintTagMetaData.fromJson(metaData),
-      main: OpenPrintTagMainData.fromJson(mainData),
-      aux: auxData != null ? OpenPrintTagAuxData.fromJson(auxData) : null,
-    );
-  }
-
-  Future<Map<String, dynamic>> _readMetaRegion(
-    Uint8List payload,
-    int metaSize,
-  ) async {
-    return await _readRegion(
+    final DecodeResult metaResult = await _readRegion(
       payload,
       offset: 0,
       size: metaSize,
       fields: metaFields,
     );
+
+    final DecodeResult mainResult = await _readMainRegion(
+      payload,
+      metaResult.data,
+      metaSize,
+    );
+
+    final DecodeResult? auxResult = await _readAuxRegion(
+      payload,
+      metaResult.data,
+    );
+
+    final OpenPrintTagData data = OpenPrintTagData(
+      meta: OpenPrintTagMetaData.fromJson(metaResult.data),
+      main: OpenPrintTagMainData.fromJson(mainResult.data),
+      aux: auxResult != null
+          ? OpenPrintTagAuxData.fromJson(auxResult.data)
+          : null,
+    );
+
+    final UnknownFieldsRegion? metaUnknown = _toHexMap(
+      metaResult.unknownFields,
+    );
+    final UnknownFieldsRegion? mainUnknown = _toHexMap(
+      mainResult.unknownFields,
+    );
+    final UnknownFieldsRegion? auxUnknown = _toHexMap(auxResult?.unknownFields);
+
+    final UnknownFields? unknownFields =
+        metaUnknown == null && mainUnknown == null && auxUnknown == null
+        ? null
+        : UnknownFields(meta: metaUnknown, main: mainUnknown, aux: auxUnknown);
+
+    return OpenPrintTagPayload(data: data, unknownFields: unknownFields);
   }
 
-  Future<Map<String, dynamic>> _readMainRegion(
+  UnknownFieldsRegion? _toHexMap(Map<int, CborValue>? cborMap) {
+    if (cborMap == null || cborMap.isEmpty) {
+      return null;
+    }
+
+    return <String, String>{
+      for (final MapEntry<int, CborValue> e in cborMap.entries)
+        CborHexUtils.intToHex(e.key): CborHexUtils.cborValueToHex(e.value),
+    };
+  }
+
+  Future<DecodeResult> _readMainRegion(
     Uint8List payload,
     Map<String, dynamic> metaData,
     int metaSize,
@@ -81,7 +104,7 @@ class OpenPrintTagDecoder {
     );
   }
 
-  Future<Map<String, dynamic>?> _readAuxRegion(
+  Future<DecodeResult?> _readAuxRegion(
     Uint8List payload,
     Map<String, dynamic> metaData,
   ) async {
@@ -101,7 +124,7 @@ class OpenPrintTagDecoder {
     );
   }
 
-  Future<Map<String, dynamic>> _readRegion(
+  Future<DecodeResult> _readRegion(
     Uint8List payload, {
     required int offset,
     required int size,

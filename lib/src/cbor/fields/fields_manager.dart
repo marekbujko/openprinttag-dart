@@ -4,6 +4,11 @@ import 'package:open_print_tag/src/enums/enums.dart';
 
 typedef AssetLoader = Future<String> Function(String assetPath);
 
+typedef DecodeResult = ({
+  Map<String, dynamic> data,
+  Map<int, CborValue>? unknownFields,
+});
+
 class FieldsManager {
   final Map<int, Field> fieldsByKey = <int, Field>{};
   final Map<String, Field> fieldsByName = <String, Field>{};
@@ -144,11 +149,13 @@ class FieldsManager {
     return false;
   }
 
-  Map<String, dynamic> decode(Map<CborSmallInt, CborValue> data) {
-    final Map<String, dynamic> result = <String, dynamic>{};
+  ({Map<String, dynamic> data, Map<int, CborValue>? unknownFields}) decode(
+    Map<CborSmallInt, CborValue> input,
+  ) {
+    final Map<String, dynamic> data = <String, dynamic>{};
     final Map<int, CborValue> unknownFields = <int, CborValue>{};
 
-    for (final MapEntry<CborSmallInt, CborValue> entry in data.entries) {
+    for (final MapEntry<CborSmallInt, CborValue> entry in input.entries) {
       final int key = entry.key.value;
       final Field? field = fieldsByKey[key];
 
@@ -158,7 +165,7 @@ class FieldsManager {
       }
 
       try {
-        result[field.name] = field.decode(entry.value);
+        data[field.name] = field.decode(entry.value);
       } catch (e) {
         throw ArgumentError(
           'Error decoding field ${field.name} (key $key): $e',
@@ -166,11 +173,10 @@ class FieldsManager {
       }
     }
 
-    if (unknownFields.isNotEmpty) {
-      result['unknown_fields'] = unknownFields;
-    }
-
-    return result;
+    return (
+      data: data,
+      unknownFields: unknownFields.isNotEmpty ? unknownFields : null,
+    );
   }
 
   void validate(Map<String, dynamic> data) {
@@ -183,22 +189,16 @@ class FieldsManager {
     }
   }
 
-  Map<int, CborValue> encode(Map<String, dynamic> data) {
+  Map<int, CborValue> encode(
+    Map<String, dynamic> data, {
+    Map<int, CborValue>? unknownFields,
+  }) {
     validate(data);
 
     final Map<int, CborValue> result = <int, CborValue>{};
 
     for (final MapEntry<String, dynamic> entry in data.entries) {
       if (entry.value == null) {
-        continue;
-      }
-
-      if (entry.key == 'unknown_fields') {
-        if (entry.value is Map<int, CborValue>) {
-          final Map<int, CborValue> unknownFields =
-              entry.value as Map<int, CborValue>;
-          result.addAll(unknownFields);
-        }
         continue;
       }
 
@@ -213,6 +213,10 @@ class FieldsManager {
       } catch (e) {
         throw ArgumentError('Error encoding field ${entry.key}: $e');
       }
+    }
+
+    if (unknownFields != null) {
+      result.addAll(unknownFields);
     }
 
     return result;

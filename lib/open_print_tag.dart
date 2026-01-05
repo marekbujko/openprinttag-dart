@@ -5,6 +5,7 @@ export 'constants.dart';
 // Export models
 export 'models/models.dart';
 // Export decoder/encoder (low-level API)
+export 'src/cbor/cbor_hex_utils.dart';
 export 'src/cbor/decoder.dart';
 export 'src/cbor/encoder.dart';
 // Export field types and managers (for advanced usage)
@@ -17,3 +18,5 @@ export 'src/enums/enums.dart';
 export 'src/open_print_tag_parser.dart';
 // Export UUID generator utility
 export 'src/uuid_generator.dart';
+// Export validation
+export 'src/validation/json_validator.dart';

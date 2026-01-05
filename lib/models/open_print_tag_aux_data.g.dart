@@ -15,8 +15,6 @@ abstract class _$OpenPrintTagAuxDataCWProxy {
 
   OpenPrintTagAuxData lastStirTime(int? lastStirTime);
 
-  OpenPrintTagAuxData unknownFields(Map<int, CborValue>? unknownFields);
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
   ///
@@ -29,7 +27,6 @@ abstract class _$OpenPrintTagAuxDataCWProxy {
     String? workgroup,
     String? generalPurposeRangeUser,
     int? lastStirTime,
-    Map<int, CborValue>? unknownFields,
   });
 }
 
@@ -58,10 +55,6 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
       call(lastStirTime: lastStirTime);
 
   @override
-  OpenPrintTagAuxData unknownFields(Map<int, CborValue>? unknownFields) =>
-      call(unknownFields: unknownFields);
-
-  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
   ///
@@ -74,7 +67,6 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
     Object? workgroup = const $CopyWithPlaceholder(),
     Object? generalPurposeRangeUser = const $CopyWithPlaceholder(),
     Object? lastStirTime = const $CopyWithPlaceholder(),
-    Object? unknownFields = const $CopyWithPlaceholder(),
   }) {
     return OpenPrintTagAuxData(
       consumedWeight: consumedWeight == const $CopyWithPlaceholder()
@@ -94,10 +86,6 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
           ? _value.lastStirTime
           // ignore: cast_nullable_to_non_nullable
           : lastStirTime as int?,
-      unknownFields: unknownFields == const $CopyWithPlaceholder()
-          ? _value.unknownFields
-          // ignore: cast_nullable_to_non_nullable
-          : unknownFields as Map<int, CborValue>?,
     );
   }
 }

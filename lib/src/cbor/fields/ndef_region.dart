@@ -11,7 +11,7 @@ class NdefRegion {
 
   NdefRegion({required this.offset, required this.size, required this.fields});
 
-  Future<Map<String, dynamic>> read(Uint8List payloadData) async {
+  Future<DecodeResult> read(Uint8List payloadData) async {
     if (offset + size > payloadData.length) {
       throw ArgumentError(
         'Region extends beyond payload: offset=$offset, size=$size, payload=${payloadData.length}',
@@ -29,7 +29,7 @@ class NdefRegion {
     }
 
     if (decoded.isEmpty) {
-      return <String, dynamic>{};
+      return (data: <String, dynamic>{}, unknownFields: null);
     }
 
     final Map<CborSmallInt, CborValue> cborData = decoded

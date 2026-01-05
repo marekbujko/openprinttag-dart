@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cbor/cbor.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:open_print_tag/open_print_tag.dart';
 import 'package:test/test.dart';
@@ -104,15 +103,15 @@ Future<void> _testBinaryFile(String filePath, OpenPrintTagParser parser) async {
 
   print('Found OpenPrintTag payload: ${openPrintTagPayload!.length} bytes');
 
-  final OpenPrintTagData data = await parser.decode(openPrintTagPayload);
-  expect(data, isNotNull);
+  final OpenPrintTagPayload payload = await parser.decode(openPrintTagPayload);
+  expect(payload.data, isNotNull);
   print('✅ Successfully decoded\n');
 
-  _inspectData(data);
+  _inspectData(payload);
 }
 
-void _inspectData(OpenPrintTagData data) {
-  final Map<String, dynamic> json = data.toJson();
+void _inspectData(OpenPrintTagPayload payload) {
+  final Map<String, dynamic> json = payload.toJson();
 
   final JsonEncoder encoder = JsonEncoder.withIndent(
     '  ',
@@ -198,121 +197,87 @@ Future<void> _testRoundTripWithModification(
   final Uint8List? openPrintTagPayload = _findOpenPrintTagPayload(records);
   expect(openPrintTagPayload, isNotNull);
 
-  final OpenPrintTagData originalData = await parser.decode(
+  final OpenPrintTagPayload originalPayload = await parser.decode(
     openPrintTagPayload!,
   );
 
-  final Map<int, dynamic>? originalMainUnknownFields =
-      originalData.main?.unknownFields;
-  final Map<int, dynamic>? originalAuxUnknownFields =
-      originalData.aux?.unknownFields;
-  final OpenPrintTagMetaData? originalMeta = originalData.meta;
+  final Map<String, String>? originalMainUnknownFields =
+      originalPayload.unknownFields?.main;
+  final Map<String, String>? originalAuxUnknownFields =
+      originalPayload.unknownFields?.aux;
+  final OpenPrintTagMetaData? originalMeta = originalPayload.data.meta;
 
-  final OpenPrintTagMainData? modifiedMain = originalData.main?.copyWith(
-    materialClass: originalData.main?.materialClass ?? MaterialClassEnum.FFF,
-    materialType: originalData.main?.materialType ?? MaterialTypeEnum.PLA,
-    minPrintTemperature: (originalData.main?.minPrintTemperature ?? 200) + 10,
-  );
+  final OpenPrintTagMainData? modifiedMain = originalPayload.data.main
+      ?.copyWith(
+        materialClass:
+            originalPayload.data.main?.materialClass ?? MaterialClassEnum.FFF,
+        materialType:
+            originalPayload.data.main?.materialType ?? MaterialTypeEnum.PLA,
+        minPrintTemperature:
+            (originalPayload.data.main?.minPrintTemperature ?? 200) + 10,
+      );
 
-  final OpenPrintTagData modifiedData = OpenPrintTagData(
-    meta: originalData.meta,
-    main: modifiedMain,
-    aux: originalData.aux,
+  final OpenPrintTagPayload modifiedPayload = OpenPrintTagPayload(
+    data: OpenPrintTagData(
+      meta: originalPayload.data.meta,
+      main: modifiedMain,
+      aux: originalPayload.data.aux,
+    ),
+    unknownFields: originalPayload.unknownFields,
   );
 
   final Uint8List encodedPayload = originalMeta != null
-      ? parser.encode(modifiedData, size: openPrintTagPayload.length)
-      : parser.encode(modifiedData, size: 320);
+      ? parser.encode(modifiedPayload, size: openPrintTagPayload.length)
+      : parser.encode(modifiedPayload, size: 320);
 
-  final OpenPrintTagData redecodedData = await parser.decode(encodedPayload);
+  final OpenPrintTagPayload redecodedPayload = await parser.decode(
+    encodedPayload,
+  );
 
   expect(
-    redecodedData.main?.minPrintTemperature,
-    (originalData.main?.minPrintTemperature ?? 200) + 10,
+    redecodedPayload.data.main?.minPrintTemperature,
+    (originalPayload.data.main?.minPrintTemperature ?? 200) + 10,
   );
 
   if (originalMainUnknownFields != null) {
-    expect(redecodedData.main?.unknownFields, isNotNull);
+    expect(redecodedPayload.unknownFields?.main, isNotNull);
     expect(
-      redecodedData.main!.unknownFields!.length,
+      redecodedPayload.unknownFields!.main!.length,
       originalMainUnknownFields.length,
     );
 
-    for (final MapEntry<int, dynamic> entry
+    for (final MapEntry<String, String> entry
         in originalMainUnknownFields.entries) {
-      expect(redecodedData.main!.unknownFields!.containsKey(entry.key), true);
-      _compareUnknownFieldValues(
+      expect(
+        redecodedPayload.unknownFields!.main!.containsKey(entry.key),
+        true,
+      );
+      expect(
+        redecodedPayload.unknownFields!.main![entry.key],
         entry.value,
-        redecodedData.main!.unknownFields![entry.key],
-        'MAIN field ${entry.key}',
+        reason: 'MAIN field ${entry.key}',
       );
     }
   }
 
   if (originalAuxUnknownFields != null) {
-    expect(redecodedData.aux?.unknownFields, isNotNull);
+    expect(redecodedPayload.unknownFields?.aux, isNotNull);
     expect(
-      redecodedData.aux!.unknownFields!.length,
+      redecodedPayload.unknownFields!.aux!.length,
       originalAuxUnknownFields.length,
     );
 
-    for (final MapEntry<int, dynamic> entry
+    for (final MapEntry<String, String> entry
         in originalAuxUnknownFields.entries) {
-      expect(redecodedData.aux!.unknownFields!.containsKey(entry.key), true);
-      _compareUnknownFieldValues(
+      expect(redecodedPayload.unknownFields!.aux!.containsKey(entry.key), true);
+      expect(
+        redecodedPayload.unknownFields!.aux![entry.key],
         entry.value,
-        redecodedData.aux!.unknownFields![entry.key],
-        'AUX field ${entry.key}',
+        reason: 'AUX field ${entry.key}',
       );
     }
   }
 
-  expect(redecodedData.meta, isNotNull);
-  expect(redecodedData.meta!.auxRegionOffset, isNotNull);
-}
-
-void _compareUnknownFieldValues(
-  dynamic original,
-  dynamic redecoded,
-  String fieldName,
-) {
-  if (original.runtimeType != redecoded.runtimeType) {
-    fail(
-      '$fieldName: type mismatch - ${original.runtimeType} vs ${redecoded.runtimeType}',
-    );
-  }
-
-  if (original is CborSmallInt && redecoded is CborSmallInt) {
-    expect(
-      redecoded.value,
-      original.value,
-      reason: '$fieldName value mismatch',
-    );
-  } else if (original is CborInt && redecoded is CborInt) {
-    expect(
-      redecoded.toInt(),
-      original.toInt(),
-      reason: '$fieldName value mismatch',
-    );
-  } else if (original is CborString && redecoded is CborString) {
-    expect(
-      redecoded.toString(),
-      original.toString(),
-      reason: '$fieldName value mismatch',
-    );
-  } else if (original is CborBytes && redecoded is CborBytes) {
-    expect(
-      redecoded.bytes,
-      original.bytes,
-      reason: '$fieldName value mismatch',
-    );
-  } else if (original is CborFloat && redecoded is CborFloat) {
-    expect(
-      redecoded.value,
-      original.value,
-      reason: '$fieldName value mismatch',
-    );
-  } else {
-    expect(redecoded, original, reason: '$fieldName value mismatch');
-  }
+  expect(redecodedPayload.data.meta, isNotNull);
+  expect(redecodedPayload.data.meta!.auxRegionOffset, isNotNull);
 }

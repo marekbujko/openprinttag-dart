@@ -18,21 +18,23 @@ import 'package:open_print_tag/open_print_tag.dart';
 final parser = OpenPrintTagParser.create();
 
 // Write data
-final data = OpenPrintTagData(
-  main: OpenPrintTagMainData(
-    materialClass: MaterialClassEnum.FFF,
-    materialType: MaterialTypeEnum.PLA,
-    materialName: 'My PLA',
-    minPrintTemperature: 200,
-    minBedTemperature: 60,
+final payload = OpenPrintTagPayload(
+  data: OpenPrintTagData(
+    main: OpenPrintTagMainData(
+      materialClass: MaterialClassEnum.FFF,
+      materialType: MaterialTypeEnum.PLA,
+      materialName: 'My PLA',
+      minPrintTemperature: 200,
+      minBedTemperature: 60,
+    ),
   ),
 );
 
-final payload = parser.encode(data, size: 320); // 320 bytes for NTAG213
+final encoded = parser.encode(payload, size: 320); // 320 bytes for NTAG213
 
 // Read data
-final decoded = await parser.decode(payload);
-print('Material: ${decoded.main?.materialName}');
+final decoded = await parser.decode(encoded);
+print('Material: ${decoded.data.main?.materialName}');
 ```
 
 ### Working with NDEF

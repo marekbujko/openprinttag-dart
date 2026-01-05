@@ -1,7 +1,8 @@
 import 'dart:typed_data';
-import 'package:cbor/cbor.dart';
+
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:open_print_tag/src/cbor/cbor_hex_utils.dart';
 import 'package:open_print_tag/src/enums/enums.dart';
 import 'package:open_print_tag/src/uuid_generator.dart';
 
@@ -202,9 +203,6 @@ class OpenPrintTagMainData {
   @JsonKey(name: 'cure_wavelength')
   final int? cureWavelength;
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final Map<int, CborValue>? unknownFields;
-
   const OpenPrintTagMainData({
     this.instanceUuid,
     this.packageUuid,
@@ -260,7 +258,6 @@ class OpenPrintTagMainData {
     this.viscosity60c,
     this.containerVolumetricCapacity,
     this.cureWavelength,
-    this.unknownFields,
   });
 
   factory OpenPrintTagMainData.fromJson(Map<String, dynamic> json) {
@@ -285,7 +282,6 @@ class OpenPrintTagMainData {
       brandUuid: brandUuid,
       materialUuid: materialUuid,
       packageUuid: packageUuid,
-      unknownFields: json['unknown_fields'] as Map<int, CborValue>?,
     );
   }
 
@@ -304,14 +300,9 @@ class OpenPrintTagMainData {
       json.remove('package_uuid');
     }
 
-    if (unknownFields?.isNotEmpty ?? false) {
-      json['unknown_fields'] = unknownFields;
-    }
-
     return json;
   }
 
-  /// Converts JSON value to Uint8List
   static Uint8List? _uint8ListFromJson(dynamic value) {
     if (value == null) {
       return null;
@@ -322,32 +313,16 @@ class OpenPrintTagMainData {
     if (value is List) {
       return Uint8List.fromList(value.cast<int>());
     }
-    if (value is Map && value.containsKey('hex')) {
-      return _hexToBytes(value['hex'] as String);
+    if (value is String) {
+      return CborHexUtils.hexToBytes(value);
     }
     return null;
   }
 
-  /// Converts Uint8List to JSON value
-  static dynamic _uint8ListToJson(Uint8List? bytes) {
+  static String? _uint8ListToJson(Uint8List? bytes) {
     if (bytes == null) {
       return null;
     }
-    return <String, String>{'hex': _toHex(bytes)};
-  }
-
-  static Uint8List _hexToBytes(String hex) {
-    final String cleaned = hex.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
-    final List<int> bytes = <int>[];
-    for (int i = 0; i < cleaned.length; i += 2) {
-      bytes.add(int.parse(cleaned.substring(i, i + 2), radix: 16));
-    }
-    return Uint8List.fromList(bytes);
-  }
-
-  static String _toHex(Uint8List bytes) {
-    return bytes
-        .map((int byte) => byte.toRadixString(16).padLeft(2, '0'))
-        .join();
+    return '#${CborHexUtils.bytesToHex(bytes)}';
   }
 }

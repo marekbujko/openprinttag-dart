@@ -15,7 +15,6 @@ class OpenPrintTagParser {
   }) : _decoder = decoder,
        _encoder = encoder;
 
-  /// Creates a parser using generated data constants
   static OpenPrintTagParser create() {
     final FieldsManager metaFields = FieldsManager.fromData(
       meta_data.metaFields,
@@ -51,12 +50,12 @@ class OpenPrintTagParser {
     return OpenPrintTagParser._(decoder: decoder, encoder: encoder);
   }
 
-  Future<OpenPrintTagData> decode(Uint8List payload) async {
+  Future<OpenPrintTagPayload> decode(Uint8List payload) async {
     return await _decoder.decodePayload(payload);
   }
 
-  Uint8List encode(OpenPrintTagData data, {required int size}) {
-    return _encoder.encodePayload(data, size: size);
+  Uint8List encode(OpenPrintTagPayload payload, {required int size}) {
+    return _encoder.encodePayload(payload, size: size);
   }
 
   Uint8List encodeAuxSection(OpenPrintTagAuxData auxData) {

@@ -14,37 +14,40 @@ void main() {
   });
 
   group('FieldsManager unknown fields', () {
-    test('decode collects unknown CBOR keys into unknown_fields', () {
+    test('decode returns unknown CBOR keys separately', () {
       final Map<CborSmallInt, CborValue> input = <CborSmallInt, CborValue>{
         const CborSmallInt(999): const CborSmallInt(42),
         const CborSmallInt(998): CborString('future'),
       };
 
-      final Map<String, dynamic> decoded = mainFields.decode(input);
+      final ({Map<String, dynamic> data, Map<int, CborValue>? unknownFields})
+      result = mainFields.decode(input);
 
-      expect(decoded.containsKey('unknown_fields'), true);
-      final Map<int, CborValue> uf =
-          decoded['unknown_fields'] as Map<int, CborValue>;
-      expect(uf.length, 2);
-      expect(uf[999], isA<CborSmallInt>());
-      expect((uf[999] as CborSmallInt).value, 42);
-      expect(uf[998], isA<CborString>());
-      expect((uf[998] as CborString).toString(), 'future');
+      expect(result.data.containsKey('unknown_fields'), false);
+      expect(result.unknownFields, isNotNull);
+      expect(result.unknownFields!.length, 2);
+      expect(result.unknownFields![999], isA<CborSmallInt>());
+      expect((result.unknownFields![999] as CborSmallInt).value, 42);
+      expect(result.unknownFields![998], isA<CborString>());
+      expect((result.unknownFields![998] as CborString).toString(), 'future');
     });
 
     test('encode merges unknown_fields into CBOR map (MAIN)', () {
       final Map<String, dynamic> data = <String, dynamic>{
         'material_class': 'FFF',
         'material_type': 'PLA',
-        'unknown_fields': <int, CborValue>{
-          777: const CborSmallInt(7),
-          778: CborString('x'),
-        },
       };
 
-      final Map<int, CborValue> encoded = mainFields.encode(data);
+      final Map<int, CborValue> unknownFields = <int, CborValue>{
+        777: const CborSmallInt(7),
+        778: CborString('x'),
+      };
 
-      // Unknown keys should be present unchanged
+      final Map<int, CborValue> encoded = mainFields.encode(
+        data,
+        unknownFields: unknownFields,
+      );
+
       expect(encoded[777], isA<CborSmallInt>());
       expect((encoded[777] as CborSmallInt).value, 7);
       expect(encoded[778], isA<CborString>());
@@ -52,12 +55,17 @@ void main() {
     });
 
     test('encode merges unknown_fields into CBOR map (AUX)', () {
-      final Map<String, dynamic> data = <String, dynamic>{
-        // Provide at least optional/valid known aux field(s) if needed later
-        'unknown_fields': <int, CborValue>{701: const CborSmallInt(123)},
+      final Map<String, dynamic> data = <String, dynamic>{};
+
+      final Map<int, CborValue> unknownFields = <int, CborValue>{
+        701: const CborSmallInt(123),
       };
 
-      final Map<int, CborValue> encoded = auxFields.encode(data);
+      final Map<int, CborValue> encoded = auxFields.encode(
+        data,
+        unknownFields: unknownFields,
+      );
+
       expect(encoded[701], isA<CborSmallInt>());
       expect((encoded[701] as CborSmallInt).value, 123);
     });

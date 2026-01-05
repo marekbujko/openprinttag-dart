@@ -302,35 +302,12 @@ void main() {
   });
 
   group('BytesField', () {
-    test('decodes to hex dict format', () {
+    test('decodes to hex string', () {
       final BytesField field = BytesField(key: 6, name: 'data', maxLength: 32);
       final Uint8List bytes = Uint8List.fromList(<int>[0xDE, 0xAD, 0xBE, 0xEF]);
 
-      final Map<String, dynamic> result = field.decode(CborBytes(bytes));
-      expect(result, isA<Map<String, dynamic>>());
-      expect(result['hex'], equals('deadbeef'));
-    });
-
-    test('encodes from hex dict', () {
-      final BytesField field = BytesField(key: 6, name: 'data', maxLength: 32);
-
-      final CborValue encoded1 = field.encode(<String, String>{
-        'hex': 'deadbeef',
-      });
-      expect(encoded1, isA<CborBytes>());
-      expect(
-        (encoded1 as CborBytes).bytes,
-        equals(<int>[0xDE, 0xAD, 0xBE, 0xEF]),
-      );
-
-      final CborValue encoded2 = field.encode(<String, String>{
-        'hex': 'de:ad:be:ef',
-      });
-      expect(encoded2, isA<CborBytes>());
-      expect(
-        (encoded2 as CborBytes).bytes,
-        equals(<int>[0xDE, 0xAD, 0xBE, 0xEF]),
-      );
+      final String result = field.decode(CborBytes(bytes)) as String;
+      expect(result, equals('deadbeef'));
     });
 
     test('encodes from List<int> and Uint8List', () {
@@ -367,32 +344,6 @@ void main() {
 
       final CborValue encoded = field.encode(<int>[1, 2, 3, 4]);
       expect((encoded as CborBytes).bytes, hasLength(4));
-    });
-
-    test('round-trip through hex dict', () {
-      final BytesField field = BytesField(
-        key: 6,
-        name: 'serial',
-        maxLength: 16,
-      );
-      final Uint8List originalBytes = Uint8List.fromList(<int>[
-        1,
-        2,
-        3,
-        0xAB,
-        0xCD,
-        0xEF,
-      ]);
-
-      final Map<String, dynamic> decoded = field.decode(
-        CborBytes(originalBytes),
-      );
-      final CborValue reencodedCbor = field.encode(decoded);
-      expect(reencodedCbor, isA<CborBytes>());
-      final Uint8List reencoded = Uint8List.fromList(
-        (reencodedCbor as CborBytes).bytes,
-      );
-      expect(reencoded, equals(originalBytes));
     });
   });
 
