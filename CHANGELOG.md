@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+### Changed
+- **Dependencies update**: Updated dependencies to latest versions
+  - `copy_with_extension`: ^10.0.1 → ^11.0.0
+  - `copy_with_extension_gen`: ^10.0.1 → ^11.0.0
+  - `json_serializable`: ^6.11.1 → ^6.11.3
+  - `ndef`: ^0.3.4 → ^0.4.0
+
 ## 0.2.0
 
 ### Breaking Changes
