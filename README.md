@@ -58,8 +58,8 @@ make update-data
 ## Links
 
 - [OpenPrintTag (Python)](https://github.com/prusa3d/OpenPrintTag) - Original implementation
-- [Specification](https://specs.prusa3d.tech/) - Format docs
-- [Repository](https://github.com/prusa3d/OpenPrintTag-dart)
+- [Specification](https://specs.openprinttag.org/#/) - Format docs
+- [Repository](https://github.com/OpenPrintTag/openprinttag-dart)
 
 ## License
 

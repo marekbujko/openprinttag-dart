@@ -41,7 +41,8 @@ enum MaterialTypeEnum {
   PSU(key: 37, name: 'Polysulfone'),
   TPI(key: 38, name: 'Thermoplastic Polyimide'),
   SBS(key: 39, name: 'Styrene-Butadiene-Styrene'),
-  OBC(key: 40, name: 'Olefin Block Copolymer');
+  OBC(key: 40, name: 'Olefin Block Copolymer'),
+  EVA(key: 41, name: 'Ethylene Vinyl Acetate');
 
   final int key;
   final String name;

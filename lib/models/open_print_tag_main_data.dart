@@ -171,6 +171,12 @@ class OpenPrintTagMainData {
   @JsonKey(name: 'chamber_temperature')
   final int? chamberTemperature;
 
+  @JsonKey(name: 'drying_temperature')
+  final int? dryingTemperature;
+
+  @JsonKey(name: 'drying_time')
+  final int? dryingTime;
+
   // FFF container dimensions
   @JsonKey(name: 'container_width')
   final int? containerWidth;
@@ -248,6 +254,8 @@ class OpenPrintTagMainData {
     this.minChamberTemperature,
     this.maxChamberTemperature,
     this.chamberTemperature,
+    this.dryingTemperature,
+    this.dryingTime,
     this.containerWidth,
     this.containerOuterDiameter,
     this.containerInnerDiameter,

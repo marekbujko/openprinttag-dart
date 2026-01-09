@@ -101,6 +101,13 @@ enum TagsEnum {
     implies: null,
     hints: null,
   ),
+  high_speed(
+    key: 71,
+    name: 'High speed',
+    category: TagCategoriesEnum.physical,
+    implies: null,
+    hints: null,
+  ),
   esd_safe(
     key: 10,
     name: 'ESD safe',
@@ -272,6 +279,13 @@ enum TagsEnum {
   contains_carbon_nano_tubes(
     key: 32,
     name: 'Contains carbon nano tubes',
+    category: TagCategoriesEnum.additives_other,
+    implies: const [TagsEnum.contains_carbon],
+    hints: null,
+  ),
+  contains_graphene(
+    key: 72,
+    name: 'Contains graphene',
     category: TagCategoriesEnum.additives_other,
     implies: const [TagsEnum.contains_carbon],
     hints: null,

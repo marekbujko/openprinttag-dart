@@ -343,4 +343,20 @@ const List<Map<String, Object?>> mainFields = const [
     'example': 405,
     'category': 'sla',
   },
+  {
+    'key': 57,
+    'name': 'drying_temperature',
+    'type': 'int',
+    'unit': '°C',
+    'example': 45,
+    'category': 'fff',
+  },
+  {
+    'key': 58,
+    'name': 'drying_time',
+    'type': 'int',
+    'unit': 'min',
+    'example': 480,
+    'category': 'fff',
+  },
 ];

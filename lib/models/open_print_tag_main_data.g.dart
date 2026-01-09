@@ -97,6 +97,10 @@ abstract class _$OpenPrintTagMainDataCWProxy {
 
   OpenPrintTagMainData chamberTemperature(int? chamberTemperature);
 
+  OpenPrintTagMainData dryingTemperature(int? dryingTemperature);
+
+  OpenPrintTagMainData dryingTime(int? dryingTime);
+
   OpenPrintTagMainData containerWidth(int? containerWidth);
 
   OpenPrintTagMainData containerOuterDiameter(int? containerOuterDiameter);
@@ -171,6 +175,8 @@ abstract class _$OpenPrintTagMainDataCWProxy {
     int? minChamberTemperature,
     int? maxChamberTemperature,
     int? chamberTemperature,
+    int? dryingTemperature,
+    int? dryingTime,
     int? containerWidth,
     int? containerOuterDiameter,
     int? containerInnerDiameter,
@@ -369,6 +375,14 @@ class _$OpenPrintTagMainDataCWProxyImpl
       call(chamberTemperature: chamberTemperature);
 
   @override
+  OpenPrintTagMainData dryingTemperature(int? dryingTemperature) =>
+      call(dryingTemperature: dryingTemperature);
+
+  @override
+  OpenPrintTagMainData dryingTime(int? dryingTime) =>
+      call(dryingTime: dryingTime);
+
+  @override
   OpenPrintTagMainData containerWidth(int? containerWidth) =>
       call(containerWidth: containerWidth);
 
@@ -462,6 +476,8 @@ class _$OpenPrintTagMainDataCWProxyImpl
     Object? minChamberTemperature = const $CopyWithPlaceholder(),
     Object? maxChamberTemperature = const $CopyWithPlaceholder(),
     Object? chamberTemperature = const $CopyWithPlaceholder(),
+    Object? dryingTemperature = const $CopyWithPlaceholder(),
+    Object? dryingTime = const $CopyWithPlaceholder(),
     Object? containerWidth = const $CopyWithPlaceholder(),
     Object? containerOuterDiameter = const $CopyWithPlaceholder(),
     Object? containerInnerDiameter = const $CopyWithPlaceholder(),
@@ -657,6 +673,14 @@ class _$OpenPrintTagMainDataCWProxyImpl
           ? _value.chamberTemperature
           // ignore: cast_nullable_to_non_nullable
           : chamberTemperature as int?,
+      dryingTemperature: dryingTemperature == const $CopyWithPlaceholder()
+          ? _value.dryingTemperature
+          // ignore: cast_nullable_to_non_nullable
+          : dryingTemperature as int?,
+      dryingTime: dryingTime == const $CopyWithPlaceholder()
+          ? _value.dryingTime
+          // ignore: cast_nullable_to_non_nullable
+          : dryingTime as int?,
       containerWidth: containerWidth == const $CopyWithPlaceholder()
           ? _value.containerWidth
           // ignore: cast_nullable_to_non_nullable
@@ -787,6 +811,8 @@ OpenPrintTagMainData _$OpenPrintTagMainDataFromJson(
   minChamberTemperature: (json['min_chamber_temperature'] as num?)?.toInt(),
   maxChamberTemperature: (json['max_chamber_temperature'] as num?)?.toInt(),
   chamberTemperature: (json['chamber_temperature'] as num?)?.toInt(),
+  dryingTemperature: (json['drying_temperature'] as num?)?.toInt(),
+  dryingTime: (json['drying_time'] as num?)?.toInt(),
   containerWidth: (json['container_width'] as num?)?.toInt(),
   containerOuterDiameter: (json['container_outer_diameter'] as num?)?.toInt(),
   containerInnerDiameter: (json['container_inner_diameter'] as num?)?.toInt(),
@@ -858,6 +884,8 @@ Map<String, dynamic> _$OpenPrintTagMainDataToJson(
   'min_chamber_temperature': instance.minChamberTemperature,
   'max_chamber_temperature': instance.maxChamberTemperature,
   'chamber_temperature': instance.chamberTemperature,
+  'drying_temperature': instance.dryingTemperature,
+  'drying_time': instance.dryingTime,
   'container_width': instance.containerWidth,
   'container_outer_diameter': instance.containerOuterDiameter,
   'container_inner_diameter': instance.containerInnerDiameter,
@@ -917,6 +945,7 @@ const _$MaterialTypeEnumEnumMap = {
   MaterialTypeEnum.TPI: 'TPI',
   MaterialTypeEnum.SBS: 'SBS',
   MaterialTypeEnum.OBC: 'OBC',
+  MaterialTypeEnum.EVA: 'EVA',
 };
 
 const _$WriteProtectionEnumEnumMap = {
@@ -940,6 +969,7 @@ const _$TagsEnumEnumMap = {
   TagsEnum.paramagnetic: 'paramagnetic',
   TagsEnum.radiation_shielding: 'radiation_shielding',
   TagsEnum.high_temperature: 'high_temperature',
+  TagsEnum.high_speed: 'high_speed',
   TagsEnum.esd_safe: 'esd_safe',
   TagsEnum.conductive: 'conductive',
   TagsEnum.emi_shielding: 'emi_shielding',
@@ -965,6 +995,7 @@ const _$TagsEnumEnumMap = {
   TagsEnum.contains_carbon: 'contains_carbon',
   TagsEnum.contains_carbon_fiber: 'contains_carbon_fiber',
   TagsEnum.contains_carbon_nano_tubes: 'contains_carbon_nano_tubes',
+  TagsEnum.contains_graphene: 'contains_graphene',
   TagsEnum.contains_glass: 'contains_glass',
   TagsEnum.contains_glass_fiber: 'contains_glass_fiber',
   TagsEnum.contains_kevlar: 'contains_kevlar',
@@ -1001,4 +1032,5 @@ const _$TagsEnumEnumMap = {
 const _$MaterialCertificationsEnumEnumMap = {
   MaterialCertificationsEnum.ul_2818: 'ul_2818',
   MaterialCertificationsEnum.ul_94_v0: 'ul_94_v0',
+  MaterialCertificationsEnum.ul_2904: 'ul_2904',
 };

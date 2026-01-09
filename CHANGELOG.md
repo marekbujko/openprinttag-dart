@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.2
+
+### Added
+- **New material type**: Added `EVA` (Ethylene Vinyl Acetate) to `MaterialTypeEnum`
+- **New tags**: Added `high_speed` and `contains_graphene` to `TagsEnum`
+- **New certification**: Added `UL 2904` to `MaterialCertificationsEnum`
+- **Drying fields**: Added `drying_temperature` and `drying_time` fields to `OpenPrintTagMainData`
+
+### Changed
+- **Documentation**: Updated specification URL to https://specs.openprinttag.org/#/
+- **Repository**: Moved repository to OpenPrintTag organization (git@github.com:OpenPrintTag/openprinttag-dart.git)
+- **Data submodule update**: Updated to latest OpenPrintTag data definitions
+
 ## 0.2.1
 
 ### Changed

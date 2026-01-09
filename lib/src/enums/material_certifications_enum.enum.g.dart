@@ -2,7 +2,8 @@
 // Source: data-submodule/data/material_certifications_enum.yaml
 enum MaterialCertificationsEnum {
   ul_2818(key: 0, name: 'UL 2818'),
-  ul_94_v0(key: 1, name: 'UL 94 V0');
+  ul_94_v0(key: 1, name: 'UL 94 V0'),
+  ul_2904(key: 2, name: 'UL 2904');
 
   final int key;
   final String name;
