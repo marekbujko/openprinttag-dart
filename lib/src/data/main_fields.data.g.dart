@@ -102,6 +102,7 @@ const List<Map<String, Object?>> mainFields = const [
   {
     'key': 53,
     'name': 'nominal_full_length',
+    'required': 'recommended',
     'category': 'fff',
     'type': 'number',
     'unit': 'mm',
@@ -110,6 +111,7 @@ const List<Map<String, Object?>> mainFields = const [
   {
     'key': 54,
     'name': 'actual_full_length',
+    'required': 'recommended',
     'category': 'fff',
     'type': 'number',
     'unit': 'mm',

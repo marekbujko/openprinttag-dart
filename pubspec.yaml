@@ -1,25 +1,25 @@
 name: open_print_tag
 description: Encode and decode OpenPrintTag data to/from CBOR. Stores material
   info like type, temperatures, brand, and more.
-version: 0.2.2
+version: 0.2.3
 repository: https://github.com/OpenPrintTag/openprinttag-dart
 environment:
   sdk: ^3.9.2
 
 dependencies:
-  cbor: ^6.3.7
+  cbor: ^6.5.1
   convert: ^3.1.2
-  copy_with_extension: ^11.0.0
-  crypto: ^3.0.6
+  copy_with_extension: ^14.0.0
+  crypto: ^3.0.7
   ieee754: ^1.0.3
-  json_annotation: ^4.9.0
-  uuid: ^4.5.1
+  json_annotation: ^4.11.0
+  uuid: ^4.5.3
 
 dev_dependencies:
-  build: ^4.0.1
-  build_runner: ^2.9.0
-  code_builder: ^4.11.0
-  copy_with_extension_gen: ^11.0.0
+  build: ^4.0.4
+  build_runner: ^2.11.1
+  code_builder: ^4.11.1
+  copy_with_extension_gen: ^14.0.0
   dart_style: ^3.1.2
   json_serializable: ^6.11.3
   lints: ^6.0.0

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.3
+
+### Changed
+- **Dependencies update**: Updated all dependencies to latest versions
+  - `cbor`: ^6.3.7 → ^6.5.1
+  - `copy_with_extension`: ^11.0.0 → ^14.0.0
+  - `crypto`: ^3.0.6 → ^3.0.7
+  - `json_annotation`: ^4.9.0 → ^4.11.0
+  - `uuid`: ^4.5.1 → ^4.5.3
+  - `build`: ^4.0.1 → ^4.0.4
+  - `build_runner`: ^2.9.0 → ^2.11.1
+  - `code_builder`: ^4.11.0 → ^4.11.1
+  - `copy_with_extension_gen`: ^11.0.0 → ^14.0.0
+- **Field metadata**: Added `required: recommended` attribute to `nominal_full_length` and `actual_full_length` fields
+- **Data submodule update**: Updated to latest OpenPrintTag data definitions
+- **Documentation**: Updated README installation instructions to use git dependency
+
 ## 0.2.2
 
 ### Added

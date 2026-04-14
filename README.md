@@ -6,7 +6,9 @@ Dart/Flutter library for encoding and decoding OpenPrintTag data on NFC tags. Ba
 
 ```yaml
 dependencies:
-  open_print_tag: ^0.1.0
+  open_print_tag:
+    git:
+      url: https://github.com/OpenPrintTag/openprinttag-dart
 ```
 
 ## Usage
