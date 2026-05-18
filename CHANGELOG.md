@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.4
+
+### Added
+- **New aux field**: Added `storage_location` to `OpenPrintTagAuxData` (free-form string, max 8 chars) for recording the physical storage location of a container (e.g. `Shelf B3`, `DB2/S4`). Intended for inventory management workflows.
+
+### Changed
+- **Field metadata**: Increased `material_name` `max_length` from 31 to 63 bytes to fit existing materials in the OpenPrintTag database
+- **Instance UUID generation**: Refactored `OpenPrintTagData.newInstanceUuid()` to extract UUID derivation into a private helper for clearer fallback handling
+- **Data submodule update**: Updated to latest OpenPrintTag data definitions (NFC Data Format spec revision, documentation naming fixes)
+
 ## 0.2.3
 
 ### Changed

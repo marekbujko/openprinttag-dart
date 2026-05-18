@@ -15,6 +15,8 @@ abstract class _$OpenPrintTagAuxDataCWProxy {
 
   OpenPrintTagAuxData lastStirTime(int? lastStirTime);
 
+  OpenPrintTagAuxData storageLocation(String? storageLocation);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
   ///
@@ -27,6 +29,7 @@ abstract class _$OpenPrintTagAuxDataCWProxy {
     String? workgroup,
     String? generalPurposeRangeUser,
     int? lastStirTime,
+    String? storageLocation,
   });
 }
 
@@ -55,6 +58,10 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
       call(lastStirTime: lastStirTime);
 
   @override
+  OpenPrintTagAuxData storageLocation(String? storageLocation) =>
+      call(storageLocation: storageLocation);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `OpenPrintTagAuxData(...).copyWith.fieldName(value)`.
   ///
@@ -67,6 +74,7 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
     Object? workgroup = const $CopyWithPlaceholder(),
     Object? generalPurposeRangeUser = const $CopyWithPlaceholder(),
     Object? lastStirTime = const $CopyWithPlaceholder(),
+    Object? storageLocation = const $CopyWithPlaceholder(),
   }) {
     return OpenPrintTagAuxData(
       consumedWeight: consumedWeight == const $CopyWithPlaceholder()
@@ -86,6 +94,10 @@ class _$OpenPrintTagAuxDataCWProxyImpl implements _$OpenPrintTagAuxDataCWProxy {
           ? _value.lastStirTime
           // ignore: cast_nullable_to_non_nullable
           : lastStirTime as int?,
+      storageLocation: storageLocation == const $CopyWithPlaceholder()
+          ? _value.storageLocation
+          // ignore: cast_nullable_to_non_nullable
+          : storageLocation as String?,
     );
   }
 }
@@ -108,6 +120,7 @@ OpenPrintTagAuxData _$OpenPrintTagAuxDataFromJson(Map<String, dynamic> json) =>
       workgroup: json['workgroup'] as String?,
       generalPurposeRangeUser: json['general_purpose_range_user'] as String?,
       lastStirTime: (json['last_stir_time'] as num?)?.toInt(),
+      storageLocation: json['storage_location'] as String?,
     );
 
 Map<String, dynamic> _$OpenPrintTagAuxDataToJson(
@@ -117,4 +130,5 @@ Map<String, dynamic> _$OpenPrintTagAuxDataToJson(
   'workgroup': instance.workgroup,
   'general_purpose_range_user': instance.generalPurposeRangeUser,
   'last_stir_time': instance.lastStirTime,
+  'storage_location': instance.storageLocation,
 };

@@ -49,7 +49,7 @@ const List<Map<String, Object?>> mainFields = const [
     'key': 10,
     'name': 'material_name',
     'type': 'string',
-    'max_length': 31,
+    'max_length': 63,
     'example': 'PC Blend Carbon Fiber Black',
     'required': 'recommended',
   },

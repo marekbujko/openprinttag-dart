@@ -28,23 +28,40 @@ class OpenPrintTagData {
       return this;
     }
 
-    final String? brandSpecificId = mainData.brandSpecificInstanceId;
-    final String? brandUuid = brandSpecificId?.isNotEmpty == true
-        ? OpenPrintTagUuidGenerator.buildBrandUuid(mainData.brandName)
-        : null;
-
-    final String newUuid = brandUuid != null && brandSpecificId != null
-        ? OpenPrintTagUuidGenerator.buildBrandSpecificInstanceUuid(
-                brandUuid,
-                brandSpecificId,
-              ) ??
-              const Uuid().v4()
-        : const Uuid().v4();
+    final String newUuid = _generateInstanceUuid(mainData);
 
     return OpenPrintTagData(
       main: mainData.copyWith(instanceUuid: newUuid),
       aux: aux,
       meta: meta,
     );
+  }
+
+  static String _generateInstanceUuid(OpenPrintTagMainData mainData) {
+    final String? brandSpecificId = mainData.brandSpecificInstanceId;
+
+    if (brandSpecificId == null || brandSpecificId.isEmpty) {
+      return const Uuid().v4();
+    }
+
+    final String? brandUuid = OpenPrintTagUuidGenerator.buildBrandUuid(
+      mainData.brandName,
+    );
+
+    if (brandUuid == null) {
+      return const Uuid().v4();
+    }
+
+    final String? brandSpecificUuid =
+        OpenPrintTagUuidGenerator.buildBrandSpecificInstanceUuid(
+          brandUuid,
+          brandSpecificId,
+        );
+
+    if (brandSpecificUuid == null) {
+      return const Uuid().v4();
+    }
+
+    return brandSpecificUuid;
   }
 }

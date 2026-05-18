@@ -12,4 +12,11 @@ const List<Map<String, Object?>> auxFields = const [
     'max_length': 8,
   },
   {'key': 3, 'name': 'last_stir_time', 'category': 'sla', 'type': 'timestamp'},
+  {
+    'key': 4,
+    'name': 'storage_location',
+    'type': 'string',
+    'example': 'Shelf B3',
+    'max_length': 8,
+  },
 ];

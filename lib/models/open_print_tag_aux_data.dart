@@ -17,11 +17,15 @@ class OpenPrintTagAuxData {
   @JsonKey(name: 'last_stir_time')
   final int? lastStirTime;
 
+  @JsonKey(name: 'storage_location')
+  final String? storageLocation;
+
   const OpenPrintTagAuxData({
     this.consumedWeight,
     this.workgroup,
     this.generalPurposeRangeUser,
     this.lastStirTime,
+    this.storageLocation,
   });
 
   factory OpenPrintTagAuxData.fromJson(Map<String, dynamic> json) =>
